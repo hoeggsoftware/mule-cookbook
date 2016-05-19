@@ -1,0 +1,14 @@
+.DS_Store
+*.lock
+testfiles/*
+
+.vagrant
+cookbooks/
+berks-cookbooks/
+
+# Bundler
+bin/*
+.bundle/*
+
+.kitchen/
+.kitchen.local.yml

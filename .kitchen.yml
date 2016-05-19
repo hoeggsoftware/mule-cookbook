@@ -1,0 +1,39 @@
+---
+driver:
+  name: vagrant
+  customize:
+    memory: 2048
+    cpuexecutioncap: 50
+  synced_folders:
+    - ["testfiles/", "/tmp/mule"]
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: ubuntu-14.04
+
+suites:
+  - name: default
+    run_list:
+      - recipe[mule::default]
+    attributes:
+      java:
+        install_flavor: "oracle"
+        jdk_version: "8"
+        oracle:
+          accept_oracle_download_terms: true
+        jdk:
+          "8":
+            x86_64:
+              url: "file:///mule/jdk-8u91-linux-x64.tar.gz"
+              checksum: "6f9b516addfc22907787896517e400a62f35e0de4a7b4d864b26b61dbe1b7552"
+      mule:
+        runtimes:
+          - name: "mule-esb"
+            version: "3.8.0"
+            enterprise_edition: true
+            license_name: "esb-preprod-2016-1.lic"
+            mule_source: "/tmp/mule"
+            mule_home: "/usr/local/mule-esb"
+            mule_env: ""

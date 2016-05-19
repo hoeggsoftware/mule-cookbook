@@ -1,0 +1,16 @@
+description "Run Mule ESB"
+author "Ryan Hoegg"
+
+setuid <%= @user %>
+setgid <%= @group %>
+
+# we need real ethernet before starting:
+start on (local-filesystems and net-device-up IFACE!=lo)
+stop on starting rc RUNLEVEL=[016]
+
+kill timeout 30
+
+script
+    . /etc/default/<%= @name %>
+    exec $MULE_HOME/bin/mule -M-Dspring.profiles.active=$MULE_ENV -M-DMULE_ENV=$MULE_ENV
+end script
