@@ -1,4 +1,4 @@
-# mule-cookbook
+# mule
 
 Installs Mule Community or Enterprise Edition runtimes on a server.
 
