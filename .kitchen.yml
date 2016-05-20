@@ -16,7 +16,7 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[mule::default]
+      - recipe[mule-cookbook::default]
     attributes:
       java:
         install_flavor: "oracle"

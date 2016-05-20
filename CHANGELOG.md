@@ -1,3 +1,7 @@
+# 0.1.1
+
+Finish renaming cookbook. Fix some Foodcritic complaints.
+
 # 0.1.0
 
 Initial release of mule cookbook.
