@@ -1,2 +1,3 @@
 .kitchen
 testfiles/
+.DS_Store

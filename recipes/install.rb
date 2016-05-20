@@ -58,7 +58,7 @@ node['mule']['runtimes'].each do |runtime|
     end
 end
 
-include_recipe 'mule-cookbook::install_license'
+include_recipe 'mule::install_license'
 
 node['mule']['runtimes'].each do |runtime|
     service runtime['name'] do
