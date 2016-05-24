@@ -1,3 +1,4 @@
+package "tar"
 package "unzip"
 
 node['mule']['runtimes'].each do |runtime|
@@ -11,9 +12,16 @@ node['mule']['runtimes'].each do |runtime|
         folder_name = "mule-standalone-#{runtime['version']}"
     end
 
-    execute 'extract archive' do
-        command "unzip -d /tmp/ #{runtime['mule_source']}/#{archive_name}"
-        not_if "[ -e /tmp/#{folder_name} ] || [ -e #{runtime['mule_home']} ]"
+    if File.exist?("#{runtime['mule_source']}/#{archive_name}.tar.gz")
+        execute 'extract .tar.gz' do
+            command "tar -C /tmp/ -zxf #{runtime['mule_source']}/#{archive_name}.tar.gz"
+            not_if "[ -e /tmp/#{folder_name} ] || [ -e #{runtime['mule_home']} ]"
+        end
+    else
+        execute 'extract .zip' do
+            command "unzip -d /tmp/ #{runtime['mule_source']}/#{archive_name}"
+            not_if "[ -e /tmp/#{folder_name} ] || [ -e #{runtime['mule_home']} ]"
+        end
     end
 
     execute 'create mule_home' do
@@ -25,8 +33,10 @@ node['mule']['runtimes'].each do |runtime|
     end
 
     template "/etc/default/#{runtime['name']}" do
+        owner node['mule']['user']
+        group node['mule']['group']
         source 'mule.erb'
-        mode 0755
+        mode 0644
         variables(
             mule_home: runtime['mule_home'],
             mule_env: runtime['mule_env']
@@ -40,6 +50,19 @@ node['mule']['runtimes'].each do |runtime|
             user: node['mule']['user'],
             group: node['mule']['group'],
             name: runtime['name']
+        )
+    end
+
+    template "#{runtime['mule_home']}/conf/wrapper.conf" do
+        source 'wrapper.conf.erb'
+        mode 0644
+        variables(
+            perm_size: runtime['perm_size'] || "256m",
+            max_perm_size: runtime['max_perm_size'] || "256m",
+            new_size: runtime['new_size'] || "512m",
+            max_new_size: runtime['max_new_size'] || "512m",
+            init_heap_size: runtime['init_heap_size'] || "1024",
+            max_heap_size: runtime['max_heap_size'] || "1024"
         )
     end
 end

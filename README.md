@@ -28,7 +28,7 @@ Attributes for Mule ESB runtimes are set as a list in the `node['mule']['runtime
                 "enterprise_edition": false,
                 "license_name": "",
                 "mule_source": "/tmp/mule",
-                "mule_home": "/usr/local/mule-enterprise-standalone-3.7.3",
+                "mule_home": "/usr/local/mule-esb",
                 "mule_env": ""
             }
         ]
@@ -43,6 +43,14 @@ Attributes for Mule ESB runtimes are set as a list in the `node['mule']['runtime
 * `mule_source` - The path containing the mule archive and license.
 * `mule_home` - Path to the MULE_HOME directory.
 * `mule_env` - The MULE_ENV variable, as used by the Mule Runtime.
+* `perm_size` - Optional. The `-XX:PermSize=` argument sent to the JVM. Defaults to `256m` when not set.
+* `max_perm_size` - Optional. The `-XX:MaxPermSize=` argument sent to the JVM. Defaults to `256m` when not set.
+* `new_size` - Optional. The `-XX:NewSize=` argument sent to the JVM. Defaults to `512m` when not set.
+* `max_new_size` - Optional. The `-XX:MaxNewSize=` argument sent to the JVM. Defaults to `512m` when not set.
+* `init_heap_size` - Optional. The `wrapper.java.initmemory` setting in the Tanuki JSW. Defaults to `1024` (m) when not set.
+* `max_heap_size` - Optional. The `wrapper.java.maxmemory` setting in the Tanuki JSW. Defaults to `1024` (m) when not set.
+
+More info on the Tanuki Java Service Wrapper is available at: http://wrapper.tanukisoftware.com/doc/english/introduction.html
 
 ## Usage
 
