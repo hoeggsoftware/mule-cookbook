@@ -1,5 +1,4 @@
 group node['mule']['group'] do
-    gid node['mule']['gid']
 end
 
 user node['mule']['user'] do
@@ -7,6 +6,5 @@ user node['mule']['user'] do
     shell '/bin/bash'
     home "/home/#{node['mule']['user']}"
     comment 'Mule user'
-    uid node['mule']['uid']
-    gid node['mule']['gid']
+    group node['mule']['group']
 end
