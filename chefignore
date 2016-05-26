@@ -1,3 +1,5 @@
 .kitchen
-testfiles/
+testfiles
 .DS_Store
+.git
+.gitignore
