@@ -4,6 +4,7 @@ default['mule']['group'] = 'mule'
 default['mule']['gid'] = 4000
 default['mule']['install_java'] = true
 default['mule']['add_user'] = true
+default['mule']['wrapper_defaults'] = true
 
 default['mule']['runtimes'] = [
     {

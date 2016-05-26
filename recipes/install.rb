@@ -53,14 +53,42 @@ node['mule']['runtimes'].each do |runtime|
         )
     end
 
+    additional_args = runtime['wrapper_additional'] || []
+    if node['mule']['wrapper_defaults']
+        additional_args.push("-Djava.net.preferIPv4Stack=TRUE")
+        additional_args.push("-Dmvel2.disable.jit=TRUE")
+        additional_args.push("-XX:+HeapDumpOnOutOfMemoryError")
+        additional_args.push("-XX:+AlwaysPreTouch")
+        additional_args.push("-XX:+UseParNewGC")
+
+        if !additional_args.join.include? "-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-receive-buffer-size="
+            additional_args.push("-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-receive-buffer-size=1048576")
+        end
+        if !additional_args.join.include? "-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-send-buffer-size="
+            additional_args.push("-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-send-buffer-size=1048576")
+        end
+        if !additional_args.join.include? "-XX:PermSize="
+            additional_args.push("-XX:PermSize=256m")
+        end
+        if !additional_args.join.include? "-XX:MaxPermSize="
+            additional_args.push("-XX:MaxPermSize=256m")
+        end
+        if !additional_args.join.include? "-XX:NewSize="
+            additional_args.push("-XX:NewSize=512m")
+        end
+        if !additional_args.join.include? "-XX:MaxNewSize="
+            additional_args.push("-XX:MaxNewSize=512m")
+        end
+        if !additional_args.join.include? "-XX:MaxTenuringThreshold="
+            additional_args.push("-XX:MaxTenuringThreshold=8")
+        end
+    end
+
     template "#{runtime['mule_home']}/conf/wrapper.conf" do
         source 'wrapper.conf.erb'
         mode 0644
         variables(
-            perm_size: runtime['perm_size'] || "256m",
-            max_perm_size: runtime['max_perm_size'] || "256m",
-            new_size: runtime['new_size'] || "512m",
-            max_new_size: runtime['max_new_size'] || "512m",
+            wrapper_additional: additional_args,
             init_heap_size: runtime['init_heap_size'] || "1024",
             max_heap_size: runtime['max_heap_size'] || "1024"
         )

@@ -13,6 +13,7 @@ Installs Mule Community or Enterprise Edition runtimes on a server.
 * `node['mule']['group']` - Group in which the Mule user will be a member.
 * `node['mule']['gid']` - GID for the Mule user group.
 * `node['mule']['install_java']` - Should this cookbook install java, or leave that up to the user.
+* `node['mule']['wrapper_defaults']` - Should the wrapper have sensible defaults if they are not included.
 
 #### `node['mule']['runtimes']`
 
@@ -36,19 +37,38 @@ Attributes for Mule ESB runtimes are set as a list in the `node['mule']['runtime
 }
 ```
 
-* `name` - The name of the Mule ESB service to be installed.</td>
-* `version` - The version of Mule ESB to be installed.</td>
+* `name` - The name of the Mule ESB service to be installed.
+* `version` - The version of Mule ESB to be installed.
 * `enterprise_edition` - Optional. Flag determining if this is an Enterprise runtime.
 * `license_name` - Optional. The name of the mule license file. A missing attribute will skip license install.
 * `mule_source` - The path containing the mule archive and license.
 * `mule_home` - Path to the MULE_HOME directory.
 * `mule_env` - The MULE_ENV variable, as used by the Mule Runtime.
-* `perm_size` - Optional. The `-XX:PermSize=` argument sent to the JVM. Defaults to `256m` when not set.
-* `max_perm_size` - Optional. The `-XX:MaxPermSize=` argument sent to the JVM. Defaults to `256m` when not set.
-* `new_size` - Optional. The `-XX:NewSize=` argument sent to the JVM. Defaults to `512m` when not set.
-* `max_new_size` - Optional. The `-XX:MaxNewSize=` argument sent to the JVM. Defaults to `512m` when not set.
-* `init_heap_size` - Optional. The `wrapper.java.initmemory` setting in the Tanuki JSW. Defaults to `1024` (m) when not set.
-* `max_heap_size` - Optional. The `wrapper.java.maxmemory` setting in the Tanuki JSW. Defaults to `1024` (m) when not set.
+* `init_heap_size` - Optional. The `wrapper.java.initmemory` parameters in the Tanuki Java Service Wrapper. Defaults to `1024` (m) when not set. If set to 0, the Wrapper will expect you to set the `-Xms` argument in `wrapper_additional`.
+* `max_heap_size` - Optional. The `wrapper.java.maxmemory` parameters in the Tanuki Java Service Wrapper. Defaults to `1024` (m) when not set. If set to 0, the Wrapper will expect you to set the `-Xmx` argument in `wrapper_additional`.
+* `wrapper_additional` - Optional. An array of strings containing the arguments sent to the JVM through the `wrapper.java.additional.n` settings in the Tanuki Java Service Wrapper.
+
+Recommended arguments to the JVM will have sane defaults for mule if not included:
+
+* `-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-receive-buffer-size=1048576`
+* `-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-send-buffer-size=1048576`
+* `-XX:PermSize=256m`
+* `-XX:MaxPermSize=256m`
+* `-XX:NewSize=512m`
+* `-XX:MaxNewSize=512m`
+* `-XX:MaxTenuringThreshold=8`
+
+Arguments for the JVM that are set by default, and should not be included:
+
+* `-Dmule.home="%MULE_HOME%"`
+* `-Dmule.base="%MULE_HOME%"`
+* `-Djava.net.preferIPv4Stack=TRUE`
+* `-Dmvel2.disable.jit=TRUE`
+* `-XX:+HeapDumpOnOutOfMemoryError`
+* `-XX:+AlwaysPreTouch`
+* `-XX:+UseParNewGC`
+
+Set the `node['mule']['wrapper_defaults']` argument to false if you don't want defaults and will set everything yourself, but `-Dmule.home="%MULE_HOME%"` and `-Dmule.base="%MULE_HOME%"` will always be set by the cookbook.
 
 More info on the Tanuki Java Service Wrapper is available at: http://wrapper.tanukisoftware.com/doc/english/introduction.html
 
