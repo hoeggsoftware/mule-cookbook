@@ -23,7 +23,7 @@ describe file('/etc/default/mule-esb') do
   it { should be_grouped_into 'mule' }
 end
 
-describe file('/usr/local/mule-esb/conf/wrapper.conf') do
+describe file('/usr/local/mule-esb-test/conf/wrapper.conf') do
   it { should exist }
   it { should be_file }
   it { should be_owned_by 'mule' }

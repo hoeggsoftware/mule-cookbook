@@ -1,12 +1,9 @@
 ---
 driver:
-  name: vagrant
+  name: digitalocean
   customize:
     memory: 2048
     cpuexecutioncap: 50
-  pre_create_command: mkdir -p .testcache
-  synced_folders:
-    - [".testcache/", "/tmp/mule"]
 
 provisioner:
   name: chef_zero
