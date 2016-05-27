@@ -1,0 +1,32 @@
+---
+driver:
+  name: digitalocean
+  customize:
+    memory: 2048
+    cpuexecutioncap: 50
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: ubuntu-14.04
+
+suites:
+  - name: default
+    run_list:
+      - recipe[mule-test::default]
+    attributes:
+      aws:
+        access_key: <%= ENV['AWS_ACCESS_KEY_ID'] %>
+        secret: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
+      mule:
+        runtimes:
+          - name: "mule-esb"
+            version: "3.8.0"
+            enterprise_edition: true
+            license_name: "test-license.lic"
+            mule_source: "/tmp/mule"
+            mule_home: "/usr/local/mule-esb-test"
+            mule_env: "test"
+            init_heap_size: "1024"
+            max_heap_size: "1024"
