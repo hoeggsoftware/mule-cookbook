@@ -3,7 +3,6 @@
 
 .vagrant
 .testcache
-cookbooks/
 berks-cookbooks/
 
 # Bundler
