@@ -1,3 +1,7 @@
+# 0.2.1
+
+* Remove variables setting uid and gid.
+
 # 0.2.0
 
 * Added the ability to open both .tar.gz and .zip files depending on what is available.
