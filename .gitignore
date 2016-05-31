@@ -1,9 +1,8 @@
 .DS_Store
 *.lock
-testfiles/*
 
 .vagrant
-cookbooks/
+.testcache
 berks-cookbooks/
 
 # Bundler
