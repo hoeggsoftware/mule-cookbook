@@ -12,3 +12,5 @@ supports 'ubuntu'
 
 depends 'aws' ,'~> 3.3.3'
 depends 'mule'
+depends 'apt', '~> 3.0.0'
+depends 'java', '~> 1.39.0'
