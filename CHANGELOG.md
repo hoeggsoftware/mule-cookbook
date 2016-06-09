@@ -1,3 +1,8 @@
+# 0.3.1
+
+* Added whyrun support.
+* Fixed some Foodcritic complaints.
+
 # 0.3.0
 
 * Changed Mule installation to a Chef Lightweight Resource Provider rather than a recipe.
