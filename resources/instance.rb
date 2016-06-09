@@ -13,7 +13,7 @@ attribute :home, kind_of: String, regex: /.*/, default: "/usr/local/mule-esb"
 attribute :env, kind_of: String, regex: /.*/, default: ""
 attribute :init_heap_size, kind_of: String, regex: /^\d+$/, default: "1024"
 attribute :max_heap_size, kind_of: String, regex: /^\d+$/, default: "1024"
-attribute :wrapper_defaults, kind_of: [TrueClass, FalseClass], default: true
 attribute :wrapper_additional, kind_of: Array, default: []
+attribute :wrapper_defaults, kind_of: [TrueClass, FalseClass], default: true
 
 attr_accessor :exists
