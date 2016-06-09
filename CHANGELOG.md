@@ -1,3 +1,8 @@
+# 0.3.0
+
+* Changed Mule installation to a Chef Lightweight Resource Provider rather than a recipe.
+* Created a test cookbook and kitchen file for CI.
+
 # 0.2.1
 
 * Remove variables setting uid and gid.

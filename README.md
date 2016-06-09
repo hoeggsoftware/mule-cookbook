@@ -77,43 +77,43 @@ Default. Creates a Mule Runtime and installs it as a service.
 
 **Ruby Types:** TrueClass, FalseClass
 
-Optional. Flag determining if this is an Enterprise runtime.
+Flag determining if this is an Enterprise runtime. Defaults to `false`.
 
 #### `env`
 
 **Ruby Types:** String
 
-The MULE_ENV variable, as used by the Mule Runtime.
+The MULE_ENV variable, as used by the Mule Runtime. Defaults to `'test'`.
 
 #### `group`
 
 **Ruby Types:** String
 
-The group that owns the mule runtime.
+The group that owns the mule runtime. Defaults to `'mule'`.
 
 #### `home`
 
 **Ruby Types:** String
 
-Path to the MULE_HOME directory.
+Path to the MULE_HOME directory. Defaults to `'/usr/local/mule-esb'`.
 
 #### `init_heap_size`
 
 **Ruby Types:** String
 
-Optional. The `wrapper.java.initmemory` parameters in the Tanuki Java Service Wrapper. Defaults to `1024` (m) when not set. If set to 0, the Wrapper will expect you to set the `-Xms` argument in `wrapper_additional`.
+The `wrapper.java.initmemory` parameters in the Tanuki Java Service Wrapper. Defaults to `'1024'` (m). If set to `'0'`, the Wrapper will expect you to set the `-Xms` argument in `wrapper_additional`. Otherwise, the JVM will use its own built in defaults.
 
 #### `license`
 
 **Ruby Types:** String
 
-Optional. The name of the mule license file. A missing attribute will skip license install.
+The name of the mule license file. Will not install a license if `enterprise_edition` is set to `false`. Defaults to empty string, which skips the license install.
 
 #### `max_heap_size`
 
 **Ruby Types:** String
 
-Optional. The `wrapper.java.maxmemory` parameters in the Tanuki Java Service Wrapper. Defaults to `1024` (m) when not set. If set to 0, the Wrapper will expect you to set the `-Xmx` argument in `wrapper_additional`.
+The `wrapper.java.maxmemory` parameters in the Tanuki Java Service Wrapper. Defaults to `'1024'` (m). If set to `'0'`, the Wrapper will expect you to set the `-Xmx` argument in `wrapper_additional`. Otherwise, the JVM will use its own built in defaults.
 
 #### `name`
 
@@ -125,25 +125,25 @@ The name of the Mule ESB service to be installed. Defaults to the name of the re
 
 **Ruby Types:** String
 
-The path to the folder containing the mule archive and license.
+The path to the folder containing the mule archive and license. Defaults to `'/tmp/mule'`.
 
 #### `user`
 
 **Ruby Types:** String
 
-The user that owns the mule runtime.
+The user that owns the mule runtime. Defaults to `'mule'`.
 
 #### `version`
 
 **Ruby Types:** String
 
-The version of Mule ESB to be installed.
+The version of Mule ESB to be installed. This is a required attribute.
 
 #### `wrapper_additional`
 
 **Ruby Types:** Array
 
-Optional. An array of strings containing the arguments sent to the JVM through the `wrapper.java.additional.n` settings in the Tanuki Java Service Wrapper. Recommended arguments to the JVM will have sane defaults for mule if not included:
+An array of strings containing the arguments sent to the JVM through the `wrapper.java.additional.n` settings in the Tanuki Java Service Wrapper. Recommended arguments to the JVM will have sane defaults for mule if not included:
 
 * `-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-receive-buffer-size=1048576`
 * `-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-send-buffer-size=1048576`
@@ -169,7 +169,7 @@ More info on the Tanuki Java Service Wrapper is available at: http://wrapper.tan
 
 **Ruby Types:** TrueClass, FalseClass
 
-Set this attributes to false if you don't want defaults and will set everything yourself, but `-Dmule.home="%MULE_HOME%"` and `-Dmule.base="%MULE_HOME%"` will always be set by the cookbook.
+Set this attributes to false if you don't want defaults and will set everything yourself, but `-Dmule.home="%MULE_HOME%"` and `-Dmule.base="%MULE_HOME%"` will always be set by the cookbook. Defaults to `true`.
 
 More info on the Tanuki Java Service Wrapper is available at: http://wrapper.tanukisoftware.com/doc/english/introduction.html
 

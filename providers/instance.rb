@@ -31,21 +31,9 @@ def load_current_resource
     end
 end
 
-def mule_exists?
-    exists = true
-    Chef::Log.info "Checking to see if '#{new_resource.home}' exists"
-    so = Mixlib::ShellOut.new("ls #{new_resource.home}", env: { 'LANG' => 'en_US', 'LANGUAGE' => 'en_US' })
-    so.run_command
-    if so.stdout.include? "No such file or directory"
-        Chef::Log.info "'#{new_resource.home}' exists"
-        exists = false
-    end
-    exists
-end
-
 def create_mule_runtime
-    package "tar"
-    package "unzip"
+    package 'tar'
+    package 'unzip'
     archive_name = "mule-standalone-#{new_resource.version}"
     folder_name = "mule-standalone-#{new_resource.version}"
 
@@ -101,52 +89,52 @@ def create_mule_runtime
     end
 
     if new_resource.wrapper_defaults
-        if !new_resource.wrapper_additional.join.include? "-Djava.net.preferIPv4Stack=TRUE"
-            new_resource.wrapper_additional.push("-Djava.net.preferIPv4Stack=TRUE")
+        if !new_resource.wrapper_additional.join.include? '-Djava.net.preferIPv4Stack=TRUE'
+            new_resource.wrapper_additional.push('-Djava.net.preferIPv4Stack=TRUE')
         end
 
-        if !new_resource.wrapper_additional.join.include? "-Dmvel2.disable.jit=TRUE"
-            new_resource.wrapper_additional.push("-Dmvel2.disable.jit=TRUE")
+        if !new_resource.wrapper_additional.join.include? '-Dmvel2.disable.jit=TRUE'
+            new_resource.wrapper_additional.push('-Dmvel2.disable.jit=TRUE')
         end
 
-        if !new_resource.wrapper_additional.join.include? "-XX:+HeapDumpOnOutOfMemoryError"
-            new_resource.wrapper_additional.push("-XX:+HeapDumpOnOutOfMemoryError")
+        if !new_resource.wrapper_additional.join.include? '-XX:+HeapDumpOnOutOfMemoryError'
+            new_resource.wrapper_additional.push('-XX:+HeapDumpOnOutOfMemoryError')
         end
 
-        if !new_resource.wrapper_additional.join.include? "-XX:+AlwaysPreTouch"
-            new_resource.wrapper_additional.push("-XX:+AlwaysPreTouch")
+        if !new_resource.wrapper_additional.join.include? '-XX:+AlwaysPreTouch'
+            new_resource.wrapper_additional.push('-XX:+AlwaysPreTouch')
         end
 
-        if !new_resource.wrapper_additional.join.include? "-XX:+UseParNewGC"
-            new_resource.wrapper_additional.push("-XX:+UseParNewGC")
+        if !new_resource.wrapper_additional.join.include? '-XX:+UseParNewGC'
+            new_resource.wrapper_additional.push('-XX:+UseParNewGC')
         end
 
-        if !new_resource.wrapper_additional.join.include? "-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-receive-buffer-size="
-            new_resource.wrapper_additional.push("-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-receive-buffer-size=1048576")
+        if !new_resource.wrapper_additional.join.include? '-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-receive-buffer-size='
+            new_resource.wrapper_additional.push('-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-receive-buffer-size=1048576')
         end
 
-        if !new_resource.wrapper_additional.join.include? "-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-send-buffer-size="
-            new_resource.wrapper_additional.push("-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-send-buffer-size=1048576")
+        if !new_resource.wrapper_additional.join.include? '-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-send-buffer-size='
+            new_resource.wrapper_additional.push('-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-send-buffer-size=1048576')
         end
 
-        if !new_resource.wrapper_additional.join.include? "-XX:PermSize="
-            new_resource.wrapper_additional.push("-XX:PermSize=256m")
+        if !new_resource.wrapper_additional.join.include? '-XX:PermSize='
+            new_resource.wrapper_additional.push('-XX:PermSize=256m')
         end
 
-        if !new_resource.wrapper_additional.join.include? "-XX:MaxPermSize="
-            new_resource.wrapper_additional.push("-XX:MaxPermSize=256m")
+        if !new_resource.wrapper_additional.join.include? '-XX:MaxPermSize='
+            new_resource.wrapper_additional.push('-XX:MaxPermSize=256m')
         end
 
-        if !new_resource.wrapper_additional.join.include? "-XX:NewSize="
-            new_resource.wrapper_additional.push("-XX:NewSize=512m")
+        if !new_resource.wrapper_additional.join.include? '-XX:NewSize='
+            new_resource.wrapper_additional.push('-XX:NewSize=512m')
         end
 
-        if !new_resource.wrapper_additional.join.include? "-XX:MaxNewSize="
-            new_resource.wrapper_additional.push("-XX:MaxNewSize=512m")
+        if !new_resource.wrapper_additional.join.include? '-XX:MaxNewSize='
+            new_resource.wrapper_additional.push('-XX:MaxNewSize=512m')
         end
 
-        if !new_resource.wrapper_additional.join.include? "-XX:MaxTenuringThreshold="
-            new_resource.wrapper_additional.push("-XX:MaxTenuringThreshold=8")
+        if !new_resource.wrapper_additional.join.include? '-XX:MaxTenuringThreshold='
+            new_resource.wrapper_additional.push('-XX:MaxTenuringThreshold=8')
         end
     end
 
