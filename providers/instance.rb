@@ -1,10 +1,20 @@
+use_inline_resources
+
+def whyrun_supported?
+  true
+end
+
 action :create do
     if @current_resource.exists
         Chef::Log.info "#{ @new_resource } already exists - nothing to do."
     else
-        create_mule_runtime
+        converge_by("Create #{ @new_resource }") do
+            endcreate_mule_runtime
+        end
         if @current_resource.enterprise_edition && !@current_resource.license.empty?
-            install_license
+            converge_by("Install license for #{ @new_resource }") do
+                install_license
+            end
         end
     end
 end
@@ -24,7 +34,7 @@ def load_current_resource
     @current_resource.max_heap_size(@new_resource.max_heap_size)
     @current_resource.wrapper_defaults(@new_resource.wrapper_defaults)
     @current_resource.wrapper_additional(@new_resource.wrapper_additional)
-    if ::File.exist?("#{@current_resource.home}")
+    if ::File.exist?(@current_resource.home)
         @current_resource.exists = true
     else
         @current_resource.exists = false
@@ -46,18 +56,18 @@ def create_mule_runtime
     end
 
     if ::File.exist?("#{new_resource.source}/#{archive_name}.tar.gz")
-        execute 'extract .tar.gz' do
+        execute "extract .tar.gz for #{new_resource.name}" do
             command "tar -C /tmp/ -zxf #{new_resource.source}/#{archive_name}.tar.gz"
             not_if "[ -e /tmp/#{folder_name} ] || [ -e #{new_resource.home} ]"
         end
     else
-        execute 'extract .zip' do
+        execute "extract .zip for #{new_resource.name}" do
             command "unzip -d /tmp/ #{new_resource.source}/#{archive_name}"
             not_if "[ -e /tmp/#{folder_name} ] || [ -e #{new_resource.home} ]"
         end
     end
 
-    execute 'create mule_home' do
+    execute "create #{new_resource.home}" do
         command <<-EOH
         cp -pR /tmp/#{folder_name}/ #{new_resource.home}
         chown -R #{new_resource.user}:#{new_resource.group} #{new_resource.home}
@@ -155,7 +165,7 @@ def create_mule_runtime
 end
 
 def install_license
-    execute 'copy license' do
+    execute "copy license for #{new_resource.name}" do
         command <<-EOH
         cp #{new_resource.source}/#{new_resource.license} /tmp/#{new_resource.license}
         chown #{new_resource.user}:#{new_resource.group} /tmp/#{new_resource.license}
@@ -163,7 +173,7 @@ def install_license
         only_if "[ -e #{new_resource.source}/#{new_resource.license} ]"
     end
 
-    execute 'install license' do
+    execute "install license for #{new_resource.name}" do
         user new_resource.user
         group new_resource.group
         cwd new_resource.home
