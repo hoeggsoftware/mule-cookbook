@@ -9,7 +9,7 @@ action :create do
         Chef::Log.info "#{ @new_resource } already exists - nothing to do."
     else
         converge_by("Create #{ @new_resource }") do
-            endcreate_mule_runtime
+            create_mule_runtime
         end
         if @current_resource.enterprise_edition && !@current_resource.license.empty?
             converge_by("Install license for #{ @new_resource }") do
