@@ -6,6 +6,4 @@ description      'Installs/Configures Mule ESB'
 long_description 'Installs/Configures Mule ESB'
 version          '0.3.0'
 
-depends 'apt', '~> 3.0.0'
-depends 'java', '~> 1.39.0'
-
+supports 'ubuntu'

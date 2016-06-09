@@ -7,49 +7,143 @@ Installs Mule Community or Enterprise Edition runtimes on a server.
 
 * Ubuntu 14.04 LTS
 
-## Attributes
+## Usage
 
-* `node['mule']['user']` - The User that will own and run Mule.
-* `node['mule']['uid']` - UID for the Mule user.
-* `node['mule']['group']` - Group in which the Mule user will be a member.
-* `node['mule']['gid']` - GID for the Mule user group.
-* `node['mule']['install_java']` - Should this cookbook install java, or leave that up to the user.
-* `node['mule']['wrapper_defaults']` - Should the wrapper have sensible defaults if they are not included.
+Mule should be run under a separate user with restricted permissions.
 
-#### `node['mule']['runtimes']`
+```ruby
+group `mule` do
+end
 
-Attributes for Mule ESB runtimes are set as a list in the `node['mule']['runtimes']` attribute:
-
-```json
-{
-    "mule": {
-        "runtimes": [
-            {
-                "name": "mule-esb",
-                "version": "3.8.0",
-                "enterprise_edition": false,
-                "license_name": "",
-                "mule_source": "/tmp/mule",
-                "mule_home": "/usr/local/mule-esb",
-                "mule_env": ""
-            }
-        ]
-    }
-}
+user `mule` do
+    supports manage_home: true
+    shell '/bin/bash'
+    home '/home/mule'
+    comment 'Mule user'
+    group 'mule'
+end
 ```
 
-* `name` - The name of the Mule ESB service to be installed.
-* `version` - The version of Mule ESB to be installed.
-* `enterprise_edition` - Optional. Flag determining if this is an Enterprise runtime.
-* `license_name` - Optional. The name of the mule license file. A missing attribute will skip license install.
-* `mule_source` - The path containing the mule archive and license.
-* `mule_home` - Path to the MULE_HOME directory.
-* `mule_env` - The MULE_ENV variable, as used by the Mule Runtime.
-* `init_heap_size` - Optional. The `wrapper.java.initmemory` parameters in the Tanuki Java Service Wrapper. Defaults to `1024` (m) when not set. If set to 0, the Wrapper will expect you to set the `-Xms` argument in `wrapper_additional`.
-* `max_heap_size` - Optional. The `wrapper.java.maxmemory` parameters in the Tanuki Java Service Wrapper. Defaults to `1024` (m) when not set. If set to 0, the Wrapper will expect you to set the `-Xmx` argument in `wrapper_additional`.
-* `wrapper_additional` - Optional. An array of strings containing the arguments sent to the JVM through the `wrapper.java.additional.n` settings in the Tanuki Java Service Wrapper.
+Mule requires a Java Development Kit to run, and it is highly recommended you use Oracle JDK 8 to run Mule ESB.
 
-Recommended arguments to the JVM will have sane defaults for mule if not included:
+```ruby
+include_recipe 'java'
+```
+
+Take note of the required node attributes required to download and install Oracle JDK
+
+It is very easy to get started with the Mule LWRP:
+
+```ruby
+mule_instance "mule-esb" do
+    version '3.8.0'
+    user 'mule'
+    group 'mule'
+end
+```
+
+The full syntax for all of the attributes in the Mule provider is:
+
+```ruby
+mule_instance "name" do
+    enterprise_edition  TrueClass, FalseClass
+    env                 String
+    group               String
+    home                String
+    init_heap_size      String
+    license             String
+    max_heap_size       String
+    name                String # defaults to 'name' if not specified
+    source              String
+    user                String
+    version             String
+    wrapper_additional  Array
+    wrapper_defaults    TrueClass, FalseClass
+    action              Symbol # defaults to :create if not specified
+end
+```
+
+## Actions
+
+This resource has the following actions:
+
+#### `:create`
+
+Default. Creates a Mule Runtime and installs it as a service.
+
+## Attributes
+
+#### `enterprise_edition`
+
+**Ruby Types:** TrueClass, FalseClass
+
+Flag determining if this is an Enterprise runtime. Defaults to `false`.
+
+#### `env`
+
+**Ruby Types:** String
+
+The MULE_ENV variable, as used by the Mule Runtime. Defaults to `'test'`.
+
+#### `group`
+
+**Ruby Types:** String
+
+The group that owns the mule runtime. Defaults to `'mule'`.
+
+#### `home`
+
+**Ruby Types:** String
+
+Path to the MULE_HOME directory. Defaults to `'/usr/local/mule-esb'`.
+
+#### `init_heap_size`
+
+**Ruby Types:** String
+
+The `wrapper.java.initmemory` parameters in the Tanuki Java Service Wrapper. Defaults to `'1024'` (m). If set to `'0'`, the Wrapper will expect you to set the `-Xms` argument in `wrapper_additional`. Otherwise, the JVM will use its own built in defaults.
+
+#### `license`
+
+**Ruby Types:** String
+
+The name of the mule license file. Will not install a license if `enterprise_edition` is set to `false`. Defaults to empty string, which skips the license install.
+
+#### `max_heap_size`
+
+**Ruby Types:** String
+
+The `wrapper.java.maxmemory` parameters in the Tanuki Java Service Wrapper. Defaults to `'1024'` (m). If set to `'0'`, the Wrapper will expect you to set the `-Xmx` argument in `wrapper_additional`. Otherwise, the JVM will use its own built in defaults.
+
+#### `name`
+
+**Ruby Types:** String
+
+The name of the Mule ESB service to be installed. Defaults to the name of the resource block if not set.
+
+#### `source`
+
+**Ruby Types:** String
+
+The path to the folder containing the mule archive and license. Defaults to `'/tmp/mule'`.
+
+#### `user`
+
+**Ruby Types:** String
+
+The user that owns the mule runtime. Defaults to `'mule'`.
+
+#### `version`
+
+**Ruby Types:** String
+
+The version of Mule ESB to be installed. This is a required attribute.
+
+#### `wrapper_additional`
+
+**Ruby Types:** Array
+
+An array of strings containing the arguments sent to the JVM through the `wrapper.java.additional.n` settings in the Tanuki Java Service Wrapper. Recommended arguments to the JVM will have sane defaults for mule if not included:
 
 * `-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-receive-buffer-size=1048576`
 * `-Dorg.glassfish.grizzly.nio.transport.TCPNIOTransport.max-send-buffer-size=1048576`
@@ -59,7 +153,7 @@ Recommended arguments to the JVM will have sane defaults for mule if not include
 * `-XX:MaxNewSize=512m`
 * `-XX:MaxTenuringThreshold=8`
 
-Arguments for the JVM that are set by default, and should not be included:
+Arguments for the JVM that are set by default and do not need to be included:
 
 * `-Dmule.home="%MULE_HOME%"`
 * `-Dmule.base="%MULE_HOME%"`
@@ -69,49 +163,19 @@ Arguments for the JVM that are set by default, and should not be included:
 * `-XX:+AlwaysPreTouch`
 * `-XX:+UseParNewGC`
 
-Set the `node['mule']['wrapper_defaults']` argument to false if you don't want defaults and will set everything yourself, but `-Dmule.home="%MULE_HOME%"` and `-Dmule.base="%MULE_HOME%"` will always be set by the cookbook.
+More info on the Tanuki Java Service Wrapper is available at: http://wrapper.tanukisoftware.com/doc/english/introduction.html
+
+#### `wrapper_defaults`
+
+**Ruby Types:** TrueClass, FalseClass
+
+Set this attributes to false if you don't want defaults and will set everything yourself, but `-Dmule.home="%MULE_HOME%"` and `-Dmule.base="%MULE_HOME%"` will always be set by the cookbook. Defaults to `true`.
 
 More info on the Tanuki Java Service Wrapper is available at: http://wrapper.tanukisoftware.com/doc/english/introduction.html
 
-## Usage
-
-Mule requires a Java Development Kit to run, and it is highly recommended you use Oracle JDK 8 to run Mule ESB. To select Oracle JDK 8 and agree to the license, include the following in your role:
-
-```json
-{
-    "java": {
-        "install_flavor": "oracle",
-        "jdk_version": "8",
-        "oracle": {
-            "accept_oracle_download_terms": true
-        }
-    }
-}
-```
-
-Otherwise, the default will be the OpenJDK as selected by the java cookbook.
-
-If you wish to install java yourself, set the `node['mule']['install_java']` attribute to `false`.
-
-Include `mule` in your node's `run_list`:
-
-```json
-{
-  "run_list": [
-    "recipe[mule::default]"
-  ]
-}
-```
-
-or in a recipe:
-
-```ruby
-include_recipe 'mule::default'
-```
-
 ## License and Authors
 
-Author: Reed McCartney (<reed@hoegg.software>)
+Authors: Reed McCartney (<reed@hoegg.software>) and Ryan Hoegg (<ryan@hoegg.software>)
 
 Copyright 2016 Hoegg Software Company
 

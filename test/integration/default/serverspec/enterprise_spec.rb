@@ -2,12 +2,10 @@ require 'spec_helper'
 
 describe group('mule') do
   it { should exist }
-  it { should have_gid 4000 }
 end
 
 describe user('mule') do
   it { should exist }
-  it { should have_uid 4000 }
   it { should belong_to_group 'mule' }
 end
 
