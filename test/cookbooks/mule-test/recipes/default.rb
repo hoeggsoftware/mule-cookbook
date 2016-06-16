@@ -22,9 +22,17 @@ end
 include_recipe 'java::default'
 
 mule_instance 'mule-esb' do
-    version '3.8.0'
     enterprise_edition true
     home '/usr/local/mule-esb-test'
+    env 'test'
+    user node['mule-test']['user']
+    group node['mule-test']['group']
+    action :create
+end
+
+mule_instance 'mule-esb-2' do
+    enterprise_edition true
+    home '/usr/local/mule-esb-test-2'
     env 'test'
     user node['mule-test']['user']
     group node['mule-test']['group']
