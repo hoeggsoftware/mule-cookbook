@@ -22,6 +22,11 @@ end
 def load_current_resource
     @current_resource = Chef::Resource::MuleInstance.new(@new_resource.name)
     @current_resource.name(@new_resource.name)
+    if @new_resource.enterprise_edition
+        @current_resource.archive_name(@new_resource.archive_name || "mule-ee-distribution-standalone-#{@new_resource.version}")
+    else
+        @current_resource.archive_name(@new_resource.archive_name || "mule-standalone-#{@new_resource.version}")
+    end
     @current_resource.version(@new_resource.version)
     @current_resource.user(@new_resource.user)
     @current_resource.group(@new_resource.group)
@@ -50,10 +55,8 @@ def create_mule_runtime
     if new_resource.enterprise_edition
         archive_name = "mule-ee-distribution-standalone-#{new_resource.version}"
         folder_name = "mule-enterprise-standalone-#{new_resource.version}"
-    else
-        archive_name = "mule-standalone-#{new_resource.version}"
-        folder_name = "mule-standalone-#{new_resource.version}"
     end
+    archive_name = new_resource.archive_name || archive_name
 
     if ::File.exist?("#{new_resource.source}/#{archive_name}.tar.gz")
         execute "extract .tar.gz for #{new_resource.name}" do
