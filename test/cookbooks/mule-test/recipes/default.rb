@@ -22,7 +22,6 @@ end
 include_recipe 'java::default'
 
 mule_instance 'mule-esb' do
-    version '3.8.0'
     enterprise_edition true
     home '/usr/local/mule-esb-test'
     env 'test'
@@ -32,7 +31,6 @@ mule_instance 'mule-esb' do
 end
 
 mule_instance 'mule-esb-2' do
-    version '3.8.0'
     enterprise_edition true
     home '/usr/local/mule-esb-test-2'
     env 'test'
