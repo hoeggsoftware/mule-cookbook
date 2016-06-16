@@ -73,6 +73,12 @@ Default. Creates a Mule Runtime and installs it as a service.
 
 ## Attributes
 
+#### `archive_name`
+
+**Ruby Types:** String
+
+The name of the archive containing the Mule runtime. Defaults to `"mule-ee-distribution-standalone-" + version` if `enterprise_edition` is `true` and `"mule-standalone-" + version` if `enterprise_edition` is `false`.
+
 #### `enterprise_edition`
 
 **Ruby Types:** TrueClass, FalseClass

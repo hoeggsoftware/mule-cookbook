@@ -1,3 +1,7 @@
+# 0.4.0
+
+* User can now specify the archive_name of the runtime. (Archive containing the runtime to install)
+
 # 0.3.1
 
 * Added whyrun support.
