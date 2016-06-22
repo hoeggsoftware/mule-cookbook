@@ -34,6 +34,6 @@ namespace :integration do
     end
 end
 
-task codeship: ['unit', 'integration:codeship']
+task codeship: ['unit:spec', 'integration:codeship']
 
-task default: ['unit', 'style', 'integration:vagrant']
+task default: ['unit:spec', 'style:chef', 'integration:vagrant']
