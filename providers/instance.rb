@@ -255,6 +255,7 @@ def run_amc_setup
         group new_resource.group
         cwd new_resource.home
         live_stream true
-        command "#{new_resource.home}/bin/mule -amc_setup #{new_resource.amc_setup}"
+        command "#{new_resource.home}/bin/amc_setup -H #{new_resource.amc_setup} #{new_resource.name}"
+        not_if "[ -e #{new_resource.home}/.mule/.agent/keystore.jks ]"
     end
 end
