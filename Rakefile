@@ -13,13 +13,27 @@ end
 
 namespace :unit do
     desc 'Runs specs with chefspec.'
-    RSpec::Core::RakeTask.new(:rspec)
+    RSpec::Core::RakeTask.new(:spec)
 end
+
 namespace :integration do
     desc 'Run kitchen integration tests'
-    Kitchen::RakeTasks.new
+    task :vagrant do
+        Kitchen::Config.new.instances.each do |instance|
+	    instance.test(:always)
+        end
+    end
+
+    task :codeship do
+       Kitchen.logger = Kitchen.default_file_logger 
+       @loader = Kitchen::Loader::YAML.new(project_config: './.kitchen.cloud.yml')
+        config = Kitchen::Config.new(loader: @loader)
+        config.instances.each do |instance|
+            instance.test(:always)
+        end
+    end
 end
 
-task codeship: ['unit']
+task codeship: ['unit', 'integration:codeship']
 
-task default: ['unit', 'style', 'integration:kitchen:all']
+task default: ['unit', 'style', 'integration:vagrant']
