@@ -1,3 +1,8 @@
+# 0.5.0
+
+* Mule Enterprise Runtimes can now register with the Anypoint Platform.
+* Added helper module to fetch registration token for amc_setup.
+
 # 0.4.0
 
 * User can now specify the archive_name of the runtime. (Archive containing the runtime to install)
