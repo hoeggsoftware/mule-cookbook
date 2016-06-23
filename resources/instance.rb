@@ -16,5 +16,6 @@ attribute :init_heap_size, kind_of: String, regex: /^\d+$/, default: '1024'
 attribute :max_heap_size, kind_of: String, regex: /^\d+$/, default: '1024'
 attribute :wrapper_additional, kind_of: Array, default: []
 attribute :wrapper_defaults, kind_of: [TrueClass, FalseClass], default: true
+attribute :amc_setup, kind_of: String, regex: /.*/, default: ''
 
 attr_accessor :exists

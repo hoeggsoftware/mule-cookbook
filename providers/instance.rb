@@ -1,19 +1,50 @@
 use_inline_resources
 
 def whyrun_supported?
-  true
+    true
 end
 
 action :create do
     if @current_resource.exists
         Chef::Log.info "#{ @new_resource } already exists - nothing to do."
     else
-        converge_by("Create #{ @new_resource }") do
-            create_mule_runtime
-        end
-        if @current_resource.enterprise_edition && !@current_resource.license.empty?
-            converge_by("Install license for #{ @new_resource }") do
-                install_license
+        if @current_resource.enterprise_edition
+            converge_by("create enterprise #{ @new_resource } runtime") do
+                install_enterprise_runtime
+                update_wrapper
+            end
+
+            if !@current_resource.license.empty?
+                converge_by("install license for #{ @new_resource }") do
+                    install_license
+                end
+            end
+
+            if !@current_resource.amc_setup.empty?
+                converge_by("amc setup for #{ @new_resource }") do
+                    run_amc_setup
+                end
+            end
+
+            converge_by("create #{ @new_resource } upstart service") do
+                install_upstart_service
+            end
+
+            converge_by("start #{ @new_resource } service") do
+                start_service
+            end
+        else
+            converge_by("create community #{ @new_resource } runtime") do
+                install_community_runtime
+                update_wrapper
+            end
+
+            converge_by("create #{ @new_resource } upstart service") do
+                install_upstart_service
+            end
+
+            converge_by("start #{ @new_resource } service") do
+                start_service
             end
         end
     end
@@ -39,6 +70,7 @@ def load_current_resource
     @current_resource.max_heap_size(@new_resource.max_heap_size)
     @current_resource.wrapper_defaults(@new_resource.wrapper_defaults)
     @current_resource.wrapper_additional(@new_resource.wrapper_additional)
+    @current_resource.amc_setup(@new_resource.amc_setup)
     if ::File.exist?(@current_resource.home)
         @current_resource.exists = true
     else
@@ -46,16 +78,12 @@ def load_current_resource
     end
 end
 
-def create_mule_runtime
+def install_community_runtime
     package 'tar'
     package 'unzip'
+
     archive_name = "mule-standalone-#{new_resource.version}"
     folder_name = "mule-standalone-#{new_resource.version}"
-
-    if new_resource.enterprise_edition
-        archive_name = "mule-ee-distribution-standalone-#{new_resource.version}"
-        folder_name = "mule-enterprise-standalone-#{new_resource.version}"
-    end
     archive_name = new_resource.archive_name || archive_name
 
     if ::File.exist?("#{new_resource.source}/#{archive_name}.tar.gz")
@@ -77,7 +105,38 @@ def create_mule_runtime
         EOH
         not_if "[ -e #{new_resource.home} ]"
     end
+end
 
+def install_enterprise_runtime
+    package 'tar'
+    package 'unzip'
+
+    archive_name = "mule-ee-distribution-standalone-#{new_resource.version}"
+    folder_name = "mule-enterprise-standalone-#{new_resource.version}"
+    archive_name = new_resource.archive_name || archive_name
+
+    if ::File.exist?("#{new_resource.source}/#{archive_name}.tar.gz")
+        execute "extract .tar.gz for #{new_resource.name}" do
+            command "tar -C /tmp/ -zxf #{new_resource.source}/#{archive_name}.tar.gz"
+            not_if "[ -e /tmp/#{folder_name} ] || [ -e #{new_resource.home} ]"
+        end
+    else
+        execute "extract .zip for #{new_resource.name}" do
+            command "unzip -d /tmp/ #{new_resource.source}/#{archive_name}"
+            not_if "[ -e /tmp/#{folder_name} ] || [ -e #{new_resource.home} ]"
+        end
+    end
+
+    execute "create #{new_resource.home}" do
+        command <<-EOH
+        cp -pR /tmp/#{folder_name}/ #{new_resource.home}
+        chown -R #{new_resource.user}:#{new_resource.group} #{new_resource.home}
+        EOH
+        not_if "[ -e #{new_resource.home} ]"
+    end
+end
+
+def install_upstart_service
     template "/etc/default/#{new_resource.name}" do
         owner new_resource.user
         group new_resource.group
@@ -100,7 +159,9 @@ def create_mule_runtime
             name: new_resource.name
         )
     end
+end
 
+def update_wrapper
     if new_resource.wrapper_defaults
         if !new_resource.wrapper_additional.join.include? '-Djava.net.preferIPv4Stack=TRUE'
             new_resource.wrapper_additional.push('-Djava.net.preferIPv4Stack=TRUE')
@@ -161,7 +222,9 @@ def create_mule_runtime
             max_heap_size: new_resource.max_heap_size
         )
     end
+end
 
+def start_service
     service new_resource.name do
         action [:start, :enable]
     end
@@ -183,5 +246,16 @@ def install_license
         live_stream true
         command "#{new_resource.home}/bin/mule -installLicense /tmp/#{new_resource.license}"
         only_if "[ -e /tmp/#{new_resource.license} ]"
+    end
+end
+
+def run_amc_setup
+    execute "run amc setup for #{new_resource.name}" do
+        user new_resource.user
+        group new_resource.group
+        cwd new_resource.home
+        live_stream true
+        command "#{new_resource.home}/bin/amc_setup -H #{new_resource.amc_setup} #{new_resource.name}"
+        not_if "[ -e #{new_resource.home}/.mule/.agent/keystore.jks ]"
     end
 end

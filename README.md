@@ -46,6 +46,8 @@ The full syntax for all of the attributes in the Mule provider is:
 
 ```ruby
 mule_instance "name" do
+    amc_setup           String
+    archive_name        String
     enterprise_edition  TrueClass, FalseClass
     env                 String
     group               String
@@ -63,6 +65,30 @@ mule_instance "name" do
 end
 ```
 
+#### Anypoint Platform Integration
+
+To register a server with the anypoint platform, the Chef recipe must get a token from Anypoint:
+
+```ruby
+Chef::Recipe.send(:include, Mule::Helper)
+regToken = amc_setup('Username','Password','Organization Name','Environment Name')
+```
+
+And use it to register the newly created runtime with the Anypoint Runtime Manager:
+
+```ruby
+mule_instance 'mule-esb' do
+    enterprise_edition true
+    home '/usr/local/mule-esb'
+    env 'test'
+    user 'mule'
+    group 'mule'
+    action :create
+    license 'muleLicense.lic'
+    amc_setup regToken
+end
+```
+
 ## Actions
 
 This resource has the following actions:
@@ -72,6 +98,12 @@ This resource has the following actions:
 Default. Creates a Mule Runtime and installs it as a service.
 
 ## Attributes
+
+#### `amc_setup`
+
+**Ruby Types:** String
+
+The token used to register with Anypoint resource manager. Should be provided through the `amc_setup` helper method. See Usage. `amc_setup` does not run if `enterprise_edition` is `false`. 
 
 #### `archive_name`
 
