@@ -7,6 +7,7 @@ long_description 'Installs/Configures Mule ESB'
 version          '0.5.0'
 
 supports 'ubuntu'
+depends 'compat_resource'
 
 source_url 'https://github.com/hoeggsoftware/mule-cookbook' if respond_to?(:source_url)
 issues_url 'https://github.com/hoeggsoftware/mule-cookbook/issues' if respond_to?(:issues_url)
