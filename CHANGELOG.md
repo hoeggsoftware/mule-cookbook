@@ -1,3 +1,7 @@
+# 0.6.0
+
+* Change Lightweight Resource Provider to Custom Resource.
+
 # 0.5.0
 
 * Mule Enterprise Runtimes can now register with the Anypoint Platform.
