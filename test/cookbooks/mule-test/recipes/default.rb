@@ -11,30 +11,59 @@ end
 group node['mule-test']['group'] do
 end
 
-user node['mule-test']['user'] do
-    supports manage_home: true
-    shell '/bin/bash'
-    home "/home/#{node['mule-test']['user']}"
-    comment 'Mule user'
-    group node['mule-test']['group']
-end
+if node['platform'] == 'ubuntu'
+    user node['mule-test']['user'] do
+        supports manage_home: true
+        shell '/bin/bash'
+        home "/home/#{node['mule-test']['user']}"
+        comment 'Mule user'
+        group node['mule-test']['group']
+    end
 
-include_recipe 'java::default'
+    include_recipe 'java::default'
 
-mule_instance 'mule-esb' do
-    enterprise_edition true
-    home '/usr/local/mule-esb-test'
-    env 'test'
-    user node['mule-test']['user']
-    group node['mule-test']['group']
-    action :create
-end
+    mule_instance 'mule-esb' do
+        enterprise_edition true
+        home '/usr/local/mule-esb-test'
+        env 'test'
+        user node['mule-test']['user']
+        group node['mule-test']['group']
+        action :create
+    end
 
-mule_instance 'mule-esb-2' do
-    enterprise_edition true
-    home '/usr/local/mule-esb-test-2'
-    env 'test'
-    user node['mule-test']['user']
-    group node['mule-test']['group']
-    action :create
+    mule_instance 'mule-esb-2' do
+        enterprise_edition true
+        home '/usr/local/mule-esb-test-2'
+        env 'test'
+        user node['mule-test']['user']
+        group node['mule-test']['group']
+        action :create
+    end
+else
+    if node['platform'] == 'windows'
+        user node['mule-test']['user'] do
+            group node['mule-test']['group']
+        end
+
+        include_recipe 'java::default'
+        include_recipe 'windows::default'
+
+        mule_instance 'mule-esb' do
+            enterprise_edition true
+            home 'c:\\Program Files\\Mule\\mule-esb-test'
+            env 'test'
+            user node['mule-test']['user']
+            group node['mule-test']['group']
+            action :create
+        end
+
+        mule_instance 'mule-esb-2' do
+            enterprise_edition true
+            home 'c:\\Program Files\\Mule\\mule-esb-test-2'
+            env 'test'
+            user node['mule-test']['user']
+            group node['mule-test']['group']
+            action :create
+        end
+    end
 end

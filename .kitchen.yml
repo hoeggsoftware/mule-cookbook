@@ -13,6 +13,7 @@ provisioner:
 
 platforms:
   - name: ubuntu-14.04
+  - name: kensykora/windows_2012_r2_standard
 
 suites:
   - name: default
