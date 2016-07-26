@@ -1,14 +1,14 @@
 ---
 driver:
   name: digitalocean
-  customize:
-    memory: 4096
 
 provisioner:
   name: chef_zero
 
 platforms:
-  - name: ubuntu-14.04
+  - name: ubuntu-14-04-x64
+    driver_config:
+      size: 2gb
 
 suites:
   - name: default
