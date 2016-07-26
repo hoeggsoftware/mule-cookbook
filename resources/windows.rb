@@ -7,7 +7,7 @@ property :user, String, default: 'mule'
 property :group, String, default: 'mule'
 property :enterprise_edition, [TrueClass, FalseClass], default: false
 property :license, String, default: ''
-property :source, String, default: '%TEMP%'
+property :source, String, default: '%TEMP%\\mule'
 property :home, String, default: 'c:\\Program Files\\Mule\\mule-esb'
 property :env, String, default: 'test'
 property :init_heap_size, String, default: '1024'
