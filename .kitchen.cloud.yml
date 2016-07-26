@@ -2,8 +2,7 @@
 driver:
   name: digitalocean
   customize:
-    memory: 2048
-    cpuexecutioncap: 50
+    memory: 4096
 
 provisioner:
   name: chef_zero
