@@ -1,3 +1,7 @@
+# 0.6.1
+
+* wrapper.conf template only runs once to avoid erasing ARM settings after amc_setup.
+
 # 0.6.0
 
 * Change Lightweight Resource Provider to Custom Resource.
