@@ -5,15 +5,20 @@ driver:
     memory: 2048
     cpuexecutioncap: 50
   pre_create_command: mkdir -p .testcache
-  synced_folders:
-    - [".testcache/", "/tmp/mule"]
 
 provisioner:
   name: chef_zero
 
 platforms:
   - name: ubuntu-14.04
-  - name: kensykora/windows_2012_r2_standard
+    driver:
+      synced_folders:
+        - [".testcache", "/tmp/mule"]
+  - name: windows-2012r2
+    driver:
+      box: kensykora/windows_2012_r2_standard
+      synced_folders:
+        - [".testcache", "c:/Users/vagrant/AppData/Local/Temp/1"]
 
 suites:
   - name: default
