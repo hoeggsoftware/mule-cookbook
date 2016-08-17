@@ -7,8 +7,8 @@ property :user, String, default: 'mule'
 property :group, String, default: 'mule'
 property :enterprise_edition, [TrueClass, FalseClass], default: false
 property :license, String, default: ''
-property :source, String, default: '%TEMP%\\mule'
-property :home, String, default: 'c:\\Program Files\\Mule\\mule-esb'
+property :source, String, default: 'C:/tmp/mule'
+property :home, String, default: 'C:/Program\ Files/Mule/mule-esb'
 property :env, String, default: 'test'
 property :init_heap_size, String, default: '1024'
 property :max_heap_size, String, default: '1024'
@@ -45,12 +45,12 @@ end
 action_class.class_eval do
     def install_community_runtime
         folder_name = "mule-standalone-#{new_resource.version}"
-        archive_name = new_resource.archive_name || "mule-standalone-#{@new_resource.version}"
+        archive_name = new_resource.archive_name || "mule-standalone-#{@new_resource.version}.zip"
 
         windows_zipfile "extract .zip for #{new_resource.name}" do
-            path '%TEMP%'
-            source "#{new_resource.source}\\#{archive_name}"
-            not_if { ::File.exist?(new_resource.home) || ::File.exist?("%TEMP%\\#{folder_name}") }
+            path ENV['TEMP']
+            source "#{new_resource.source}/#{archive_name}"
+            not_if { ::File.exist?(new_resource.home) || ::File.exist?(ENV['TEMP']+"/#{folder_name}") }
         end
 
         batch "create #{new_resource.home}" do
@@ -64,12 +64,12 @@ action_class.class_eval do
 
     def install_enterprise_runtime
         folder_name = "mule-enterprise-standalone-#{new_resource.version}"
-        archive_name = new_resource.archive_name || "mule-ee-distribution-standalone-#{@new_resource.version}"
+        archive_name = new_resource.archive_name || "mule-ee-distribution-standalone-#{@new_resource.version}.zip"
 
         windows_zipfile "extract .zip for #{new_resource.name}" do
-            path '%TEMP%'
-            source "#{new_resource.source}\\#{archive_name}"
-            not_if { ::File.exist?(new_resource.home) || ::File.exist?("%TEMP%\\#{folder_name}") }
+            path ENV['TEMP']
+            source "#{new_resource.source}/#{archive_name}"
+            not_if { ::File.exist?(new_resource.home) || ::File.exist?(ENV['TEMP']+"/#{folder_name}") }
         end
 
         batch "create #{new_resource.home}" do
@@ -82,7 +82,7 @@ action_class.class_eval do
     end
 
     def install_windows_service
-        template "#{new_resource.home}\\bin\\mule.bat" do
+        template "#{new_resource.home}/bin/mule.bat" do
             source 'mule.bat.erb'
             cookbook 'mule'
             variables(
@@ -145,7 +145,7 @@ action_class.class_eval do
             end
         end
 
-        template "#{new_resource.home}\\conf\\wrapper.conf" do
+        template "#{new_resource.home}/conf/wrapper.conf" do
             source 'wrapper.conf.erb'
             cookbook 'mule'
             variables(
