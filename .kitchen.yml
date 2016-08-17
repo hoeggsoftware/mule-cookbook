@@ -28,9 +28,3 @@ suites:
       aws:
         access_key: <%= ENV['AWS_ACCESS_KEY_ID'] %>
         secret: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
-      java:
-        jdk:
-          "8":
-            x86_64:
-              url: "file:///tmp/mule/jdk-8u91-linux-x64.tar.gz"
-              checksum: "6f9b516addfc22907787896517e400a62f35e0de4a7b4d864b26b61dbe1b7552"
