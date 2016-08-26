@@ -18,7 +18,7 @@ platforms:
     driver:
       box: kensykora/windows_2012_r2_standard
       synced_folders:
-        - [".testcache", "c:/Users/vagrant/AppData/Local/Temp/1"]
+        - [".testcache", "c:/tmp/mule"]
 
 suites:
   - name: default
