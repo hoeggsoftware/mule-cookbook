@@ -30,14 +30,14 @@ action :create do
         end
 
         install_upstart_service
-        
+
         start_service
     else
         install_community_runtime
         update_wrapper
 
         install_upstart_service
-            
+
         start_service
     end
 end
@@ -186,6 +186,12 @@ action_class.class_eval do
                 init_heap_size: new_resource.init_heap_size,
                 max_heap_size: new_resource.max_heap_size
             )
+            action :nothing
+        end
+
+        file "#{new_resource.home}/conf/wrapper.conf.lock" do
+            action :create_if_missing
+            notifies :create, "template[#{new_resource.home}/conf/wrapper.conf]", :immediately
         end
     end
 
