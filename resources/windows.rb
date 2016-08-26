@@ -8,7 +8,7 @@ property :group, String, default: 'mule'
 property :enterprise_edition, [TrueClass, FalseClass], default: false
 property :license, String, default: ''
 property :source, String, default: 'C:/tmp/mule'
-property :home, String, default: 'C:/Program\ Files/Mule/mule-esb'
+property :home, String, default: 'C:/Program\\ Files/Mule/mule-esb'
 property :env, String, default: 'test'
 property :init_heap_size, String, default: '1024'
 property :max_heap_size, String, default: '1024'
@@ -45,18 +45,18 @@ end
 action_class.class_eval do
     def install_community_runtime
         folder_name = "mule-standalone-#{new_resource.version}"
-        archive_name = new_resource.archive_name || "mule-standalone-#{@new_resource.version}.zip"
+        archive_name = new_resource.archive_name || "mule-standalone-#{new_resource.version}.zip"
 
         windows_zipfile "extract .zip for #{new_resource.name}" do
-            path ENV['TEMP']
+            path ENV['USERPROFILE'].gsub('\\','/') + '/AppData/Local/Temp'
             source "#{new_resource.source}/#{archive_name}"
-            not_if { ::File.exist?(new_resource.home) || ::File.exist?(ENV['TEMP']+"/#{folder_name}") }
+            not_if { ::File.exist?(new_resource.home) || ::File.exist?(ENV['USERPROFILE'].gsub('\\','/') + '/AppData/Local/Temp' + "/#{folder_name}") }
         end
 
         batch "create #{new_resource.home}" do
             code <<-EOH
-                xcopy /e /y %TEMP%\\#{folder_name} #{new_resource.home}
-                icacls /setowner #{new_resource.user} /t /c /l /q #{new_resource.home}
+                robocopy %USERPROFILE%\\AppData\\Local\\Temp\\#{folder_name} "#{new_resource.home.gsub('\\','').gsub('/','\\')}" /mir
+                icacls "#{new_resource.home.gsub('\\','').gsub('/','\\')}" /setowner #{new_resource.user} /t /c /l /q
                 EOH
             not_if { ::File.exist?(new_resource.home) }
         end
@@ -64,18 +64,18 @@ action_class.class_eval do
 
     def install_enterprise_runtime
         folder_name = "mule-enterprise-standalone-#{new_resource.version}"
-        archive_name = new_resource.archive_name || "mule-ee-distribution-standalone-#{@new_resource.version}.zip"
+        archive_name = new_resource.archive_name || "mule-ee-distribution-standalone-#{new_resource.version}.zip"
 
         windows_zipfile "extract .zip for #{new_resource.name}" do
-            path ENV['TEMP']
+            path ENV['USERPROFILE'].gsub('\\','/') + '/AppData/Local/Temp'
             source "#{new_resource.source}/#{archive_name}"
-            not_if { ::File.exist?(new_resource.home) || ::File.exist?(ENV['TEMP']+"/#{folder_name}") }
+            not_if { ::File.exist?(new_resource.home) || ::File.exist?(ENV['USERPROFILE'].gsub('\\','/') + '/AppData/Local/Temp' + "/#{folder_name}") }
         end
 
         batch "create #{new_resource.home}" do
             code <<-EOH
-                xcopy /e /y %TEMP%\\#{folder_name} #{new_resource.home}
-                icacls /setowner #{new_resource.user} /t /c /l /q #{new_resource.home}
+                robocopy %USERPROFILE%\\AppData\\Local\\Temp\\#{folder_name} "#{new_resource.home.gsub('\\','').gsub('/','\\')}" /mir
+                icacls "#{new_resource.home.gsub('\\','').gsub('/','\\')}" /setowner #{new_resource.user} /t /c /l /q
                 EOH
             not_if { ::File.exist?(new_resource.home) }
         end
@@ -91,7 +91,9 @@ action_class.class_eval do
             )
         end
 
-        batch "#{new_resource.home}\\bin\\install.bat"
+        batch "install #{new_resource.home} as a service" do
+            code "#{new_resource.home.gsub('\\','^').gsub('/','\\')}\\bin\\install.bat"
+        end
     end
 
     def update_wrapper
@@ -163,20 +165,20 @@ action_class.class_eval do
     end
 
     def install_license
-            batch "copy license for #{new_resource.name}" do
+        batch "copy license for #{new_resource.name}" do
             command <<-EOH
-            copy #{new_resource.source}\\#{new_resource.license} %TEMP%\\#{new_resource.license}
-            icacls /setowner #{new_resource.user} %TEMP%\\#{new_resource.license}
+            copy "#{new_resource.source.gsub('\\','').gsub('/','\\')}\\#{new_resource.license}" %USERPROFILE%\\AppData\\Local\\Temp\\#{new_resource.license}
+            icacls %TEMP%\\#{new_resource.license} /setowner #{new_resource.user}
             EOH
-            only_if { ::File.exists?("#{new_resource.source}\\#{new_resource.license}") }
+            only_if { ::File.exists?("#{new_resource.source}/#{new_resource.license}") }
         end
 
         batch "install license for #{new_resource.name}" do
             user new_resource.user
             group new_resource.group
             cwd new_resource.home
-            code "#{new_resource.home}\\bin\\mule.bat -installLicense %TEMP%\\#{new_resource.license}"
-            only_if { ::File.exists?("%TEMP%\\#{new_resource.license}") }
+            code "\"#{new_resource.home.gsub('\\','').gsub('/','\\')}\\bin\\mule.bat\" -installLicense %USERPROFILE%\\AppData\\Local\\Temp\\#{new_resource.license}"
+            only_if { ::File.exists?(ENV['USERPROFILE'].gsub('\\','/') + '/AppData/Local/Temp' + "/#{new_resource.license}") }
         end
     end
 
@@ -185,8 +187,8 @@ action_class.class_eval do
             user new_resource.user
             group new_resource.group
             cwd new_resource.home
-            code "#{new_resource.home}\\bin\\amc_setup.bat -H #{new_resource.amc_setup} #{new_resource.name}"
-            not_if { ::File.exists?("#{new_resource.home}\\.mule\\.agent\\keystore.jks") }
+            code "\"#{new_resource.home.gsub('\\','').gsub('/','\\')}\\bin\\amc_setup.bat\" -H #{new_resource.amc_setup} #{new_resource.name}"
+            not_if { ::File.exists?("#{new_resource.home}/.mule/.agent/keystore.jks") }
         end
     end
 end
