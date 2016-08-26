@@ -26,11 +26,15 @@ if node['platform'] == 'ubuntu'
 
 elsif node['platform'] == 'windows'
     include_recipe 'windows::default'
-    mule_base = 'C:/Program\ Files/Mule'
+    mule_base = 'C:/Program Files/Mule'
     temp = 'C:/tmp/mule'
     jdk_install = 'jdk-8u91-windows-x64.exe'
 
     directory temp do
+        recursive true
+    end
+
+    directory mule_base do
         recursive true
     end
 
