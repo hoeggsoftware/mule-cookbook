@@ -4,10 +4,11 @@ maintainer_email 'reed@hoegg.software'
 license          'Apache License, Version 2.0'
 description      'Installs/Configures Mule ESB'
 long_description 'Installs/Configures Mule ESB'
-version          '0.6.1'
+version          '0.7.0'
 
 supports 'ubuntu'
 depends 'compat_resource'
+depends 'windows'
 
 source_url 'https://github.com/hoeggsoftware/mule-cookbook' if respond_to?(:source_url)
 issues_url 'https://github.com/hoeggsoftware/mule-cookbook/issues' if respond_to?(:issues_url)

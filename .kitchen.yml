@@ -5,14 +5,20 @@ driver:
     memory: 2048
     cpuexecutioncap: 50
   pre_create_command: mkdir -p .testcache
-  synced_folders:
-    - [".testcache/", "/tmp/mule"]
 
 provisioner:
   name: chef_zero
 
 platforms:
   - name: ubuntu-14.04
+    driver:
+      synced_folders:
+        - [".testcache", "/tmp/mule"]
+  - name: windows-2012r2
+    driver:
+      box: kensykora/windows_2012_r2_standard
+      synced_folders:
+        - [".testcache", "c:/tmp/mule"]
 
 suites:
   - name: default
@@ -22,9 +28,3 @@ suites:
       aws:
         access_key: <%= ENV['AWS_ACCESS_KEY_ID'] %>
         secret: <%= ENV['AWS_SECRET_ACCESS_KEY'] %>
-      java:
-        jdk:
-          "8":
-            x86_64:
-              url: "file:///tmp/mule/jdk-8u91-linux-x64.tar.gz"
-              checksum: "6f9b516addfc22907787896517e400a62f35e0de4a7b4d864b26b61dbe1b7552"
