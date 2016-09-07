@@ -12,10 +12,10 @@ Installs Mule Community or Enterprise Edition runtimes on a server.
 Mule should be run under a separate user with restricted permissions.
 
 ```ruby
-group `mule` do
+group 'mule' do
 end
 
-user `mule` do
+user 'mule' do
     supports manage_home: true
     shell '/bin/bash'
     home '/home/mule'
