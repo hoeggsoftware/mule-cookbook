@@ -1,0 +1,14 @@
+[Unit]
+Description=Mule Runtime <%= @version %>
+Documentation=https://docs.mulesoft.com
+
+[Service]
+Type=forking
+User=<%= @user %>
+Environment="MULE_ENV=<%= @mule_env %>"
+ExecStart=<%= @mule_home %>/bin/mule start -M-Dspring.profiles.active=$MULE_ENV -M-DMULE_ENV=$MULE_ENV
+ExecStop=<%= @mule_home %>/bin/mule stop
+ExecReload=<%= @mule_home %>/bin/mule restart -M-Dspring.profiles.active=$MULE_ENV -M-DMULE_ENV=$MULE_ENV
+
+[Install]
+WantedBy=multi-user.target
