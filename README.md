@@ -6,6 +6,7 @@ Installs Mule Community or Enterprise Edition runtimes on a server.
 ## Supported Platforms
 
 * Ubuntu 14.04 LTS
+* Centos 7.2
 
 ## Usage
 
