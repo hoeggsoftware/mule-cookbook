@@ -13,7 +13,7 @@ property :home, String, default: '/usr/local/mule-esb'
 property :env, String, default: 'test'
 property :init_heap_size, String, default: '1024'
 property :max_heap_size, String, default: '1024'
-property :wrapper_additional, Array, default: []
+property :wrapper_additional, Array, default: lazy{ [] }
 property :wrapper_defaults, [TrueClass, FalseClass], default: true
 property :amc_setup, String, default: ''
 
