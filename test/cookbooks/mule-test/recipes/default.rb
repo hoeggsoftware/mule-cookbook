@@ -12,7 +12,7 @@ group node['mule-test']['group'] do
 end
 
 user node['mule-test']['user'] do
-    supports manage_home: true
+    manage_home true
     shell '/bin/bash'
     home "/home/#{node['mule-test']['user']}"
     comment 'Mule user'

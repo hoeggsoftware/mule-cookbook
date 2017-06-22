@@ -10,7 +10,7 @@ version '0.1.0'
 
 supports 'ubuntu'
 
-depends 'aws' ,'~> 3.3.3'
+depends 'aws' 
 depends 'mule'
-depends 'apt', '~> 3.0.0'
-depends 'java', '~> 1.39.0'
+depends 'apt'
+depends 'java'
