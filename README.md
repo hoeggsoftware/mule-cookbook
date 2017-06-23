@@ -17,7 +17,7 @@ group 'mule' do
 end
 
 user 'mule' do
-    supports manage_home: true
+    manage_home true
     shell '/bin/bash'
     home '/home/mule'
     comment 'Mule user'
