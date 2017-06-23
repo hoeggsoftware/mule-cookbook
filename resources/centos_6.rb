@@ -36,7 +36,7 @@ action :create do
     update_wrapper
   end
 
-  install_upstart_service
+  install_initd_service
 
   start_service
 end
@@ -100,7 +100,7 @@ action_class.class_eval do
     end
   end
 
-  def install_upstart_service
+  def install_initd_service
     template "/etc/default/#{new_resource.name}" do
       owner new_resource.user
       group new_resource.group
@@ -113,14 +113,14 @@ action_class.class_eval do
       )
     end
 
-    template "/etc/init/#{new_resource.name}.conf" do
-      source 'mule.init.erb'
+    template "/etc/init.d/#{new_resource.name}" do
+      source 'mule.init_d.erb'
       cookbook 'mule'
-      mode 0644
+      mode 0755
       variables(
         user: new_resource.user,
-        group: new_resource.group,
-        name: new_resource.name
+        name: new_resource.name,
+        mule_home: new_resource.home
       )
     end
   end
@@ -197,6 +197,10 @@ action_class.class_eval do
 
   def start_service
     service new_resource.name do
+      start_command   "/etc/init.d/#{new_resource.name} start"
+      stop_command    "/etc/init.d/#{new_resource.name} stop"
+      restart_command "/etc/init.d/#{new_resource.name} restart"
+      status_command  "/etc/init.d/#{new_resource.name} status"
       action [:start, :enable]
     end
   end
