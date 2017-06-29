@@ -1,6 +1,6 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          <%= @name %>
+# Provides:          dev1
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -8,93 +8,77 @@
 # Short-Description: Start daemon at boot time
 # Description:       Enable Mule ESB service provided by daemon.
 ### END INIT INFO
+SCRIPT="sudo <%= @mule_home %>/bin/mule"
+RUNAS="<%= @user %>"
 
-dir="<%= @mule_home %>/bin"
-echo "directory is $dir"
-cmd="./mule -M-Dspring.profiles.active=$MULE_ENV -M-DMULE_ENV=$MULE_ENV"
-user="<%= @user %>"
+PIDFILE="/var/run/dev1.pid"
+LOGFILE="/var/log/dev1.log"
 
-name=`basename $0`
-pid_file="/var/run/$name.pid"
-stdout_log="/var/log/$name.log"
-stderr_log="/var/log/$name.err"
-
-get_pid() {
-    cat "$pid_file"
+start() {
+  if [ -f /var/run/$PIDNAME ] && kill -0 $(cat /var/run/$PIDNAME); then
+    echo 'Service already running' >&2
+    return 1
+  fi
+  echo 'Starting service…' >&2
+  local CMD="$SCRIPT &> \"$LOGFILE\" & echo \$!"
+  su -c "$CMD" $RUNAS > "$PIDFILE"
+  echo 'Service started' >&2
 }
 
-is_running() {
-    [ -f "$pid_file" ] && ps -p `get_pid` > /dev/null 2>&1
+status() {
+  if [ -f $PIDFILE ]; then
+    PID=`cat $PIDFILE`
+    if [ -z "`ps axf | grep ${PID} | grep -v grep`" ]; then
+      printf "%s\n" "Process dead but pidfile exists"
+    else
+      echo "Running"
+    fi
+  else
+    printf "%s\n" "Service not running"
+  fi
+}
+
+stop() {
+  if [ ! -f "$PIDFILE" ] || ! kill -0 $(cat "$PIDFILE"); then
+    echo 'Service not running' >&2
+    return 1
+  fi
+  echo 'Stopping service…' >&2
+  kill -15 $(cat "$PIDFILE") && rm -f "$PIDFILE"
+  echo 'Service stopped' >&2
+}
+
+uninstall() {
+  echo -n "Are you really sure you want to uninstall this service? That cannot be undone. [yes|No] "
+  local SURE
+  read SURE
+  if [ "$SURE" = "yes" ]; then
+    stop
+    rm -f "$PIDFILE"
+    echo "Notice: log file is not be removed: '$LOGFILE'" >&2
+    update-rc.d -f dev1 remove
+    rm -fv "$0"
+  fi
 }
 
 case "$1" in
-    start)
-    if is_running; then
-        echo "Already started"
-    else
-        echo "Starting $name"
-        cd "$dir"
-        if [ -z "$user" ]; then
-            $cmd >> "$stdout_log" 2>> "$stderr_log" &
-        else
-            sudo -u "$user" $cmd >> "$stdout_log" 2>> "$stderr_log" &
-        fi
-        echo $! > "$pid_file"
-        if ! is_running; then
-            echo "Unable to start, see $stdout_log and $stderr_log"
-            exit 1
-        fi
-    fi
+  start)
+    start
     ;;
-    stop)
-    if is_running; then
-        echo -n "Stopping $name.."
-        kill `get_pid`
-        for i in 1 2 3 4 5 6 7 8 9 10
-        # for i in `seq 10`
-        do
-            if ! is_running; then
-                break
-            fi
-
-            echo -n "."
-            sleep 1
-        done
-        echo
-
-        if is_running; then
-            echo "Not stopped; may still be shutting down or shutdown may have failed"
-            exit 1
-        else
-            echo "Stopped"
-            if [ -f "$pid_file" ]; then
-                rm "$pid_file"
-            fi
-        fi
-    else
-        echo "Not running"
-    fi
+  stop)
+    stop
     ;;
-    restart)
-    $0 stop
-    if is_running; then
-        echo "Unable to stop, will not attempt to start"
-        exit 1
-    fi
-    $0 start
+  status)
+    status
     ;;
-    status)
-    if is_running; then
-        echo "Running"
-    else
-        echo "Stopped"
-        exit 1
-    fi
+  uninstall)
+    uninstall
     ;;
-    *)
-    echo "Usage: $0 {start|stop|restart|status}"
-    exit 1
+  retart)
+    stop
+    start
     ;;
+  *)
+    echo "Usage: $0 {start|stop|status|restart|uninstall}"
 esac
-
 exit 0
