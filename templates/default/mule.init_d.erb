@@ -1,84 +1,48 @@
-#!/bin/sh
-### BEGIN INIT INFO
-# Provides:          dev1
-# Required-Start:    $remote_fs $syslog
-# Required-Stop:     $remote_fs $syslog
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Start daemon at boot time
-# Description:       Enable Mule ESB service provided by daemon.
-### END INIT INFO
-SCRIPT="sudo <%= @mule_home %>/bin/mule"
-RUNAS="<%= @user %>"
+#!/bin/bash
+# RHEL Mule Init Script
+#
+# chkconfig: 2345 65 64
+# description: <%= @service_name %> service.
 
-PIDFILE="/var/run/dev1.pid"
-LOGFILE="/var/log/dev1.log"
+. /etc/init.d/functions
+#
+if [ -f /etc/sysconfig/mule ]; then
+    . /etc/sysconfig/mule
+fi
 
-start() {
-  if [ -f /var/run/$PIDNAME ] && kill -0 $(cat /var/run/$PIDNAME); then
-    echo 'Service already running' >&2
-    return 1
-  fi
-  echo 'Starting service…' >&2
-  local CMD="$SCRIPT &> \"$LOGFILE\" & echo \$!"
-  su -c "$CMD" $RUNAS > "$PIDFILE"
-  echo 'Service started' >&2
-}
+# Set JDK related environment
+JAVA_HOME=/usr/java/default
+PATH=$PATH:$JAVA_HOME/bin
 
-status() {
-  if [ -f $PIDFILE ]; then
-    PID=`cat $PIDFILE`
-    if [ -z "`ps axf | grep ${PID} | grep -v grep`" ]; then
-      printf "%s\n" "Process dead but pidfile exists"
-    else
-      echo "Running"
-    fi
-  else
-    printf "%s\n" "Service not running"
-  fi
-}
+# Set Mule related environment
+MULE_HOME=<%= @mule_home %>
+MULE_LIB=$MULE_HOME/lib
+PATH=$PATH:$MULE_HOME/bin
+RUN_AS_USER=<%= @mule_user %>
+MULE_ENV=<%= @mule_env %>
 
-stop() {
-  if [ ! -f "$PIDFILE" ] || ! kill -0 $(cat "$PIDFILE"); then
-    echo 'Service not running' >&2
-    return 1
-  fi
-  echo 'Stopping service…' >&2
-  kill -15 $(cat "$PIDFILE") && rm -f "$PIDFILE"
-  echo 'Service stopped' >&2
-}
-
-uninstall() {
-  echo -n "Are you really sure you want to uninstall this service? That cannot be undone. [yes|No] "
-  local SURE
-  read SURE
-  if [ "$SURE" = "yes" ]; then
-    stop
-    rm -f "$PIDFILE"
-    echo "Notice: log file is not be removed: '$LOGFILE'" >&2
-    update-rc.d -f dev1 remove
-    rm -fv "$0"
-  fi
-}
+# Export environment variables
+export JAVA_HOME MULE_HOME MULE_LIB PATH MULE_ENV RUN_AS_USER
 
 case "$1" in
-  start)
-    start
-    ;;
-  stop)
-    stop
-    ;;
-  status)
-    status
-    ;;
-  uninstall)
-    uninstall
-    ;;
-  retart)
-    stop
-    start
-    ;;
-  *)
-    echo "Usage: $0 {start|stop|status|restart|uninstall}"
+    start)
+        echo "Start service <%= @service_name %>"
+        $MULE_HOME/bin/mule start -M-Dspring.profiles.active=$MULE_ENV -M-DMULE_ENV=$MULE_ENV
+        ;;
+    stop)
+        echo "Stop service mule <%= @service_name %>"
+        $MULE_HOME/bin/mule stop
+        ;;
+    restart)
+        echo "Restart service mule <%= @service_name %>"
+        $MULE_HOME/bin/mule restart -M-Dspring.profiles.active=$MULE_ENV -M-DMULE_ENV=$MULE_ENV
+        ;;
+    status)
+        echo "Status service mule <%= @service_name %>"
+        $MULE_HOME/bin/mule status
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart}"
+        exit 1
+        ;;
 esac
-exit 0

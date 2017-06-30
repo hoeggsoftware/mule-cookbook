@@ -1,4 +1,6 @@
-provides :mule_instance, platform: 'centos'
+provides :mule_instance, platform: 'centos' do |node|
+  node['platform_version'].to_i >= 7
+end
 provides :mule_instance, platform_family: 'rhel'
 
 property :name, String, name_attribute: true, required: true

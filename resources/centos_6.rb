@@ -1,7 +1,7 @@
-provides :mule_instance, platform: 'centos'
+provides :mule_instance, platform: 'centos' do |node|
+  node['platform_version'].to_i == 6
+end
 provides :mule_instance, platform_family: 'rhel'
-provides :mule_instance, platform_version: '6.6'
-provides :mule_instance, platform_version: '6.7'
 
 property :name, String, name_attribute: true, required: true
 property :archive_name, String
@@ -109,7 +109,8 @@ action_class.class_eval do
       mode 0644
       variables(
         mule_home: new_resource.home,
-        mule_env: new_resource.env
+        mule_user: new_resource.user,
+        mule_env:  new_resource.env
       )
     end
 
@@ -118,8 +119,8 @@ action_class.class_eval do
       cookbook 'mule'
       mode 0755
       variables(
-        user: new_resource.user,
-        name: new_resource.name,
+        mule_env: new_resource.env,
+        mule_user: new_resource.user,
         mule_home: new_resource.home
       )
     end
@@ -197,10 +198,7 @@ action_class.class_eval do
 
   def start_service
     service new_resource.name do
-      start_command   "/etc/init.d/#{new_resource.name} start"
-      stop_command    "/etc/init.d/#{new_resource.name} stop"
-      restart_command "/etc/init.d/#{new_resource.name} restart"
-      status_command  "/etc/init.d/#{new_resource.name} status"
+      start_command "service #{new_resource.name} start"
       action [:start, :enable]
     end
   end
