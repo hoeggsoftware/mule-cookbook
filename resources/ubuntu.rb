@@ -1,5 +1,6 @@
-provides :mule_instance, platform: 'ubuntu'
-
+provides :mule_instance, platform: 'ubuntu' do |node| 
+  node['platform_version'].to_i <= 14
+end
 property :name, String, name_attribute: true, required: true
 property :archive_name, String
 property :version, String, default: '3.8.0'
