@@ -7,6 +7,7 @@ Installs Mule Community or Enterprise Edition runtimes on a server.
 
 * Ubuntu 14.04 LTS
 * Centos 7.2
+* Centos 6.7
 
 ## Usage
 
@@ -17,7 +18,7 @@ group 'mule' do
 end
 
 user 'mule' do
-    supports manage_home: true
+    manage_home true
     shell '/bin/bash'
     home '/home/mule'
     comment 'Mule user'
