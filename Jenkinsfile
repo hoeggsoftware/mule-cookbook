@@ -5,6 +5,7 @@ pipeline {
             steps {
                 sh 'ruby --version'
                 sh 'which ruby'
+                sh 'echo $PATH'
             }
         }
     }
