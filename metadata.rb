@@ -1,10 +1,11 @@
 name             'mule'
 maintainer       'Reed McCartney'
 maintainer_email 'reed@hoegg.software'
-license          'Apache License, Version 2.0'
+license          'Apache-2.0'
 description      'Installs/Configures Mule ESB'
 long_description 'Installs/Configures Mule ESB'
 version          '0.8.0'
+chef_version     '>=12'
 
 supports 'ubuntu'
 supports 'centos'

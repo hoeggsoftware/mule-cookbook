@@ -2,11 +2,32 @@
 driver:
   name: digitalocean
 
+verifier:
+  name: inspec
+  format: junit
+  output: ./../target/%{platform}_do_inspec_output.xml
+
 provisioner:
   name: chef_zero
 
+transport:
+  ssh_key_only: true
+  ssh_key: /tmp/key_file
+
 platforms:
   - name: ubuntu-14-04-x64
+    driver_config:
+      size: 2gb
+  - name: ubuntu-16-04-x64
+    driver_config:
+      size: 2gb
+  - name: ubuntu-17-04-x64
+    driver_config:
+      size: 2gb
+  - name: centos-6-x64
+    driver_config:
+      size: 2gb
+  - name: centos-7-x64
     driver_config:
       size: 2gb
 
