@@ -1,9 +1,10 @@
 pipeline {
-    agent any
+    agent 
     stages {
-        stage('build') {
+        stage('test') {
             steps {
-                echo 'Hello, Jenkins'
+                sh 'bundle'
+                sh 'kitchen-test'
             }
         }
     }
