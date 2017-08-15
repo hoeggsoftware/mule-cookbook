@@ -3,8 +3,8 @@ pipeline {
     stages {
         stage('test') {
             steps {
-                sh 'bundle'
-                sh 'kitchen-test'
+                sh 'ruby --version'
+                sh 'which ruby'
             }
         }
     }
