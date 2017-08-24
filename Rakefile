@@ -24,7 +24,7 @@ namespace :integration do
         end
     end
 
-    task :codeship do
+    task :cloud do
        Kitchen.logger = Kitchen.default_file_logger 
        @loader = Kitchen::Loader::YAML.new(project_config: './.kitchen.cloud.yml')
         config = Kitchen::Config.new(loader: @loader)
@@ -34,6 +34,6 @@ namespace :integration do
     end
 end
 
-task codeship: ['unit:spec', 'integration:codeship']
+task cloud: ['unit:spec', 'integration:cloud']
 
 task default: ['unit:spec', 'style:chef', 'integration:vagrant']

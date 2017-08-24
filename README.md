@@ -1,4 +1,3 @@
-[ ![Codeship Status for hoeggsoftware/mule-cookbook](https://codeship.com/projects/0e0b98c0-05ef-0134-3846-6e0165e195ed/status?branch=master)](https://codeship.com/projects/154582)
 # mule
 
 Installs Mule Community or Enterprise Edition runtimes on a server.

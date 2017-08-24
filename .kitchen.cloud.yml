@@ -9,6 +9,18 @@ platforms:
   - name: ubuntu-14-04-x64
     driver_config:
       size: 2gb
+  - name: ubuntu-16-04-x64
+    driver_config:
+      size: 2gb
+  - name: ubuntu-17-04-x64
+    driver_config:
+      size: 2gb
+  - name: centos-6-x64
+    driver_config:
+      size: 2gb
+  - name: centos-7-x64
+    driver_config:
+      size: 2gb
 
 suites:
   - name: default
