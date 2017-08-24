@@ -4,7 +4,7 @@ gem 'rake',                 '~>12.0'
 gem 'berkshelf',            '~>6.3'
 
 group 'development' do
-  gem 'pry'
+  gem 'pry',                  '~> 0.10'
   gem 'foodcritic',           '~> 11.3'
   gem 'kitchen-digitalocean', '~> 0.9'
   gem 'kitchen-vagrant',      '~> 1.2'

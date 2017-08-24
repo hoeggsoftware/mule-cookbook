@@ -25,16 +25,7 @@ namespace :integration do
     end
   end
 
-  task :digital_ocean do
-    Kitchen.logger = Kitchen.default_file_logger 
-    @loader = Kitchen::Loader::YAML.new(project_config: './.kitchen.cloud.yml')
-    config = Kitchen::Config.new(loader: @loader)
-    config.instances.each do |instance|
-      instance.test(:always)
-    end
-  end
-
-  task :digital_ocean_with_auto_key do
+  task :cloud do
     do_connection = Helpers::DOConnection.new
     do_connection.register_do_key!
     do_connection.setup_keyfile!
@@ -42,13 +33,22 @@ namespace :integration do
     @loader = Kitchen::Loader::YAML.new(project_config: './.kitchen.cloud.yml')
     config = Kitchen::Config.new(loader: @loader)
     config.instances.each do |instance|
-      instance.test(:always)
+      Process.fork do
+        instance.test(:always)
+      end
     end
+    results = Process.waitall
     do_connection.unregister_do_key!
     do_connection.cleanup_keyfile!
+    statuses = results.flatten.select { |p| p.class == Process::Status }
+    if statuses.all? { |process| process.exitstatus == 0 }
+      exit 0
+    else
+      exit 1
+    end
   end
 end
 
-task codeship: ['unit:spec', 'integration:digital_ocean']
+task cloud: ['unit:spec', 'integration:cloud']
 
 task default: ['unit:spec', 'style:chef', 'integration:vagrant']

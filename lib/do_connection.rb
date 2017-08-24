@@ -51,11 +51,13 @@ module Helpers
       puts "Putting private key in #{KEY_FILE_PATH}"
       File.open(KEY_FILE_PATH, "w+") { |f| f.write(private_key) }
       File.chmod(0400, KEY_FILE_PATH)
+      system("ssh-add", "-D")
       system("ssh-add", KEY_FILE_PATH)
     end
 
     def cleanup_keyfile!
       puts "Removing private key from #{KEY_FILE_PATH}"
+      system("ssh-add", "-D")
       File.delete(KEY_FILE_PATH)
     end
   end
