@@ -10,7 +10,7 @@ pipeline {
             steps {
                 sh '/home/jenkins/.rubies/current/bin/gem install bundler'
                 sh '/home/jenkins/.rubies/current/bin/bundle'
-                sh '/home/jenkins/.rubies/current/bin/bundle exec rake cloud'
+                sh '/home/jenkins/.rubies/current/bin/bundle exec /home/jenkins/.rubies/current/bin/rake cloud'
             }
         }
     }
