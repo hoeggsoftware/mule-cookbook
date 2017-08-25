@@ -53,7 +53,7 @@ module Helpers
       puts "Putting private key in #{KEY_FILE_PATH}"
       File.open(KEY_FILE_PATH, "w+") { |f| f.write(private_key) }
       File.chmod(0400, KEY_FILE_PATH)
-      system("eval `ssh-agent -s`")
+      system("eval", "ssh-agent")
       system("ssh-add", "-d", KEY_FILE_PATH)
       system("ssh-add", KEY_FILE_PATH)
     end
