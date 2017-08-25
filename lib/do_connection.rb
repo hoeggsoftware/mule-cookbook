@@ -33,6 +33,7 @@ module Helpers
         )
       end
       ENV["DIGITALOCEAN_SSH_KEY_IDS"] = id.to_s
+      setup_keyfile!
     end
 
     def id
@@ -42,6 +43,7 @@ module Helpers
     def unregister_do_key!
       puts "Removing key from Digital Ocean registration"
       @client.ssh_keys.delete(id: id)
+      cleanup_keyfile!
     end
 
     def setup_keyfile!
@@ -51,7 +53,7 @@ module Helpers
       puts "Putting private key in #{KEY_FILE_PATH}"
       File.open(KEY_FILE_PATH, "w+") { |f| f.write(private_key) }
       File.chmod(0400, KEY_FILE_PATH)
-      system("ssh-add", "-D")
+      system("ssh-add", "-d", KEY_FILE_PATH)
       system("ssh-add", KEY_FILE_PATH)
     end
 

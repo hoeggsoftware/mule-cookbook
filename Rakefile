@@ -28,18 +28,14 @@ namespace :integration do
   task :cloud do
     do_connection = Helpers::DOConnection.new
     do_connection.register_do_key!
-    do_connection.setup_keyfile!
     Kitchen.logger = Kitchen.default_file_logger 
-    @loader = Kitchen::Loader::YAML.new(project_config: './.kitchen.cloud.yml')
-    config = Kitchen::Config.new(loader: @loader)
+    loader = Kitchen::Loader::YAML.new(project_config: './.kitchen.cloud.yml')
+    config = Kitchen::Config.new(loader: loader)
     config.instances.each do |instance|
-      Process.fork do
-        instance.test(:always)
-      end
+      Process.fork { instance.test(:always) }
     end
     results = Process.waitall
     do_connection.unregister_do_key!
-    do_connection.cleanup_keyfile!
     statuses = results.flatten.select { |p| p.class == Process::Status }
     if statuses.all? { |process| process.exitstatus == 0 }
       exit 0
