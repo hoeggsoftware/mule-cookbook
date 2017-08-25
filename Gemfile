@@ -12,5 +12,5 @@ group 'development' do
   gem 'webmock',              '~> 3.0'
   gem 'rspec',                '~> 3.6'
   gem 'sshkey',               '~> 1.9'
-  gem 'droplet_kit',          '~> 2.0'
+  gem 'droplet_kit',          '~> 2.2'
 end

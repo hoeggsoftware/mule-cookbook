@@ -5,6 +5,9 @@ driver:
 provisioner:
   name: chef_zero
 
+transport:
+  ssh_key_only: true
+
 platforms:
   - name: ubuntu-14-04-x64
     driver_config:
