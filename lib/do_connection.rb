@@ -3,29 +3,33 @@ require 'droplet_kit'
 module Helpers
   class DOConnection
 
-    KEY_FILE_PATH = "/tmp/key_file"
-
-    def initialize(access_token: ENV["DIGITALOCEAN_ACCESS_TOKEN"])
+    KEY_FILE_PATH    = "/tmp/key_file"
+    def initialize(
+      access_token:     ENV["DIGITALOCEAN_ACCESS_TOKEN"],
+      config_file_path: "/home/jenkins/.ssh/config"
+    )
       puts "Connecting to Digital Ocean"
-      @client   = DropletKit::Client.new(access_token: access_token)
+      @client           = DropletKit::Client.new(access_token: access_token)
       puts "Generating new RSA Key"
-      @rsa_key  = SSHKey.generate
+      @rsa_key          = SSHKey.generate
+      @config_file_path = config_file_path
+      @file_length      = File.new(config_file_path).size
     end
 
-    attr_reader :client
+    attr_reader :client, :config_file_path, :rsa_key, :file_length
 
     def public_key
-      @pub ||= @rsa_key.ssh_public_key
+      @pub ||= rsa_key.ssh_public_key
     end
 
     def private_key
-      @private_key ||= @rsa_key.private_key
+      @private_key ||= rsa_key.private_key
     end
 
     def register_do_key!
       puts "Registering key with Digital Ocean"
       unless client.ssh_keys.find(id: id)
-        @do_key  = @client.ssh_keys.create(
+        @do_key  = client.ssh_keys.create(
           DropletKit::SSHKey.new(
             name: "kitchen_testing",
             public_key: public_key
@@ -42,7 +46,7 @@ module Helpers
 
     def unregister_do_key!
       puts "Removing key from Digital Ocean registration"
-      @client.ssh_keys.delete(id: id)
+      client.ssh_keys.delete(id: id)
       cleanup_keyfile!
     end
 
@@ -53,15 +57,15 @@ module Helpers
       puts "Putting private key in #{KEY_FILE_PATH}"
       File.open(KEY_FILE_PATH, "w+") { |f| f.write(private_key) }
       File.chmod(0400, KEY_FILE_PATH)
-      system("eval", "ssh-agent")
-      system("ssh-add", "-d", KEY_FILE_PATH)
-      system("ssh-add", KEY_FILE_PATH)
+      File.open(config_file_path, 'a') do |f|
+        f.puts "Identityfile #{KEY_FILE_PATH}"
+      end
     end
 
     def cleanup_keyfile!
       puts "Removing private key from #{KEY_FILE_PATH}"
-      system("ssh-add", "-d", KEY_FILE_PATH)
       File.delete(KEY_FILE_PATH)
+      File.truncate(config_file_path, file_length)
     end
   end
 end
