@@ -8,6 +8,11 @@ driver:
   synced_folders:
     - [".testcache/", "/tmp/mule"]
 
+verifier:
+  name: inspec
+  format: junit
+  output: ./inspec_output.xml
+
 provisioner:
   name: chef_zero
 
