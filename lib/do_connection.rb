@@ -13,7 +13,7 @@ module Helpers
       puts "Generating new RSA Key"
       @rsa_key          = SSHKey.generate
       @config_file_path = config_file_path
-      @file_length      = File.new(config_file_path).size
+      @file_length      = File.new(config_file_path, "w").size
     end
 
     attr_reader :client, :config_file_path, :rsa_key, :file_length
