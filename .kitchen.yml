@@ -10,8 +10,6 @@ driver:
 
 verifier:
   name: inspec
-  format: junit
-  output: ./%{platform}_vagrant_inspec_output.xml
 
 provisioner:
   name: chef_zero

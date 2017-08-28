@@ -2,6 +2,11 @@
 driver:
   name: digitalocean
 
+verifier:
+  name: inspec
+  format: junit
+  output: ./target/%{platform}_do_inspec_output.xml
+
 provisioner:
   name: chef_zero
 

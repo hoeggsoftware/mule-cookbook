@@ -8,10 +8,16 @@ pipeline {
                 DIGITALOCEAN_ACCESS_TOKEN = credentials('dev_digital_ocean_token')
             }
             steps {
+                sh 'mkdir -p target'
                 sh '/home/jenkins/.rubies/current/bin/gem install bundler'
                 sh '/home/jenkins/.rubies/current/bin/bundle'
                 sh '/home/jenkins/.rubies/current/bin/bundle exec /home/jenkins/.rubies/current/bin/rake cloud'
             }
+        }
+    }
+    post {
+        always {
+            junit './target/*.xml'
         }
     }
 }
