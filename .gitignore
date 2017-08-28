@@ -12,7 +12,7 @@ bin/*
 .kitchen/
 .kitchen.local.yml
 
-inspec_output.xml
+*inspec_output.xml
 
 # Eclipse
 .project
