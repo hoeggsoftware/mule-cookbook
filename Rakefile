@@ -25,14 +25,6 @@ namespace :integration do
     end
   end
 
-  task :digital_ocean do
-    Kitchen.logger = Kitchen.default_file_logger 
-    @loader = Kitchen::Loader::YAML.new(project_config: './.kitchen.cloud.yml')
-    config = Kitchen::Config.new(loader: @loader)
-    config.instances.each do |instance|
-      instance.test(:always)
-    end
-  end
 
   # Task expects to be called with a config_file_path pointing to a .ssh/config
   # Otherwise, it assumes it is located at /home/jenkins/.ssh/config
@@ -47,6 +39,7 @@ namespace :integration do
     config.instances.each do |instance|
       Process.fork { instance.test(:always) }
     end
+    results = Process.waitall
     do_connection.unregister_do_key!
     statuses = results.flatten.select { |p| p.class == Process::Status }
     if statuses.all? { |process| process.exitstatus == 0 }
