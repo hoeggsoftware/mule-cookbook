@@ -1,19 +1,21 @@
 require 'sshkey'
 require 'droplet_kit'
-module Helpers
-  class DOConnection
 
-    KEY_FILE_PATH    = "/tmp/key_file"
+module Helpers
+  # Configures and removes key for digital ocean
+  class DOConnection
+    KEY_FILE_PATH = '/tmp/key_file'
+
     def initialize(
-      access_token:     ENV["DIGITALOCEAN_ACCESS_TOKEN"],
-      config_file_path: "/home/jenkins/.ssh/config"
+      access_token:     ENV['DIGITALOCEAN_ACCESS_TOKEN'],
+      config_file_path: '/home/jenkins/.ssh/config'
     )
-      puts "Connecting to Digital Ocean"
-      @client           = DropletKit::Client.new(access_token: access_token)
-      puts "Generating new RSA Key"
-      @rsa_key          = SSHKey.generate
+      puts 'Connecting to Digital Ocean'
+      @client = DropletKit::Client.new(access_token: access_token)
+      puts 'Generating new RSA Key'
+      @rsa_key = SSHKey.generate
       @config_file_path = config_file_path
-      @file_length      = File.new(config_file_path, "w").size
+      @file_length      = File.size(config_file_path)
     end
 
     attr_reader :client, :config_file_path, :rsa_key, :file_length
@@ -27,16 +29,15 @@ module Helpers
     end
 
     def register_do_key!
-      puts "Registering key with Digital Ocean"
+      puts 'Registering key with Digital Ocean'
       unless client.ssh_keys.find(id: id)
-        @do_key  = client.ssh_keys.create(
+        @do_key = client.ssh_keys.create(
           DropletKit::SSHKey.new(
-            name: "kitchen_testing",
-            public_key: public_key
+            name: 'kitchen_testing', public_key: public_key
           )
         )
       end
-      ENV["DIGITALOCEAN_SSH_KEY_IDS"] = id.to_s
+      ENV['DIGITALOCEAN_SSH_KEY_IDS'] = id.to_s
       setup_keyfile!
     end
 
@@ -45,17 +46,15 @@ module Helpers
     end
 
     def unregister_do_key!
-      puts "Removing key from Digital Ocean registration"
+      puts 'Removing key from Digital Ocean registration'
       client.ssh_keys.delete(id: id)
       cleanup_keyfile!
     end
 
     def setup_keyfile!
-      if File.exist?(KEY_FILE_PATH)
-        cleanup_keyfile!
-      end
+      cleanup_keyfile! if File.exist?(KEY_FILE_PATH)
       puts "Putting private key in #{KEY_FILE_PATH}"
-      File.open(KEY_FILE_PATH, "w+") { |f| f.write(private_key) }
+      File.open(KEY_FILE_PATH, 'w+') { |f| f.write(private_key) }
       File.chmod(0400, KEY_FILE_PATH)
       File.open(config_file_path, 'a') do |f|
         f.puts "Identityfile #{KEY_FILE_PATH}"
