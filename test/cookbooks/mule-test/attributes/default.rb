@@ -4,3 +4,5 @@ default['java']['oracle']['accept_oracle_download_terms'] = true
 
 default['mule-test']['user'] = 'mule'
 default['mule-test']['group'] = 'mule'
+  
+default['mule-test']['enterprise'] = true
