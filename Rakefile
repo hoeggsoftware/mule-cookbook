@@ -26,12 +26,8 @@ namespace :integration do
   end
 
 
-  # Task expects to be called with a config_file_path pointing to a .ssh/config
-  # Otherwise, it assumes it is located at /home/jenkins/.ssh/config
-  task :cloud, [:config_file_path] do |_, args|
-    do_connection = Helpers::DOConnection.new(
-      config_file_path: args[:config_file_path] || "/home/jenkins/.ssh/config"
-    )
+  task :cloud do |_, args|
+    do_connection = Helpers::DOConnection.new()
     do_connection.register_do_key!
     Kitchen.logger = Kitchen.default_file_logger 
     loader = Kitchen::Loader::YAML.new(project_config: './.kitchen.cloud.yml')
