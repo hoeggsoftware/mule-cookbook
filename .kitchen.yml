@@ -8,6 +8,9 @@ driver:
   synced_folders:
     - [".testcache/", "/tmp/mule"]
 
+verifier:
+  name: inspec
+
 provisioner:
   name: chef_zero
 
