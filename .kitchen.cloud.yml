@@ -4,7 +4,7 @@ driver:
 
 verifier:
   name: inspec
-  format: junit
+  reporter: junit
   output: ./target/%{platform}_do_inspec_output.xml
 
 provisioner:
